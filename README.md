@@ -22,6 +22,8 @@ In order to correctly use this website, you need to change the include/credentia
 
 **BE CAREFUL :** Make sure to not upload the credentials.php file with your own credentials ! The file is listed in the .gitignore, but some IDEs don't take this file into account
 
+You can easily make sure this won't happen : just run the command "git update-index --assume-unchanged includes/credentials.php" in your git command promt, in your repo.
+
 ## Authors
 
 The authors of this project are members of the current "Let's dev !" association. For a precise list of all the authors, see the AUTHORS file
