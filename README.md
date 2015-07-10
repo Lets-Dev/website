@@ -14,11 +14,12 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-Sh
 
 ## Documentation
 
-The documentation for this project is available [here](lets-dev.ig2i.fr/doc)
+The documentation for this project is available in the "doc" folder (to be opened in an internet navigator)
 
 ## Installation
 
 In order to correctly use this website, you need to change the include/credentials.php file and set your DB username and password.
+
 **BE CAREFUL :** Make sure to not upload the credentials.php file with your own credentials ! The file is listed in the .gitignore, but some IDEs don't take this file into account
 
 ## Authors
