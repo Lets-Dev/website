@@ -6,7 +6,7 @@ This project is the source code of the website of the association "Let's Dev !",
 
 ## What is "Let's Dev !" ?
 
-WIP
+"Let's Dev !" is an association that were created in and acts inside IG2I, an engineer school in Lens, France. Its goal is to promote teamwork and learning of new programming languages by organizing programming "challenges" between teams of 3 to 10 people.
 
 ## Licensing
 
