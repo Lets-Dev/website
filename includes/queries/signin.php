@@ -5,6 +5,7 @@ if (!isset($_SESSION['connected']))
 include('../credentials.php');
 include('../functions/security.php');
 $return['status'] = 'success';
+$return['messages'] = array();
 /**
  * Cette page inscrit les utilisateurs dans la base de données.
  * Elle renvoie un tableau de la structure qui suit:
