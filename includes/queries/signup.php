@@ -47,13 +47,15 @@ switch ($_POST['method']) {
 
         // Check if e-mail is already used
         if ($return['status'] == 'success') {
-            $query = $db->prepare("SELECT count(*) AS nb FROM users WHERE user_email = :email");
+            $query = $db->prepare("SELECT count(*) AS nb FROM users WHERE user_email = :email or (user_firstname=:firstname and user_lastname=:lastname)");
             $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
+            $query->bindValue(':firstname', $_POST['firstname'], PDO::PARAM_STR);
+            $query->bindValue(':lastname', $_POST['lastname'], PDO::PARAM_STR);
             $query->execute();
             if ($data = $query->fetchObject())
                 if ($data->nb != 0) {
                     $return['status'] = 'error';
-                    array_push($return['messages'], 'Les mots de passe saisis sont différents.');
+                    array_push($return['messages'], 'L\'utilisateur saisi existe déjà.');
                 }
         }
 
