@@ -16,6 +16,8 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-Sh
 
 The documentation for this project is available in the "doc" folder (to be opened in an internet navigator)
 
+**BE CAREFUL :** All school years are registered by the year at the beginning of the school year (ex: 2015 for 2015-2016)
+
 ## Installation
 
 In order to correctly use this website, you need to change the include/credentials.php file and set your DB username and password.
