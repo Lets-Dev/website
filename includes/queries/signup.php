@@ -63,7 +63,7 @@ switch ($_POST['method']) {
             $query->bindValue(':user_lastname', $_POST['lastname'], PDO::PARAM_STR);
             $query->bindValue(':user_email', $_POST['email'], PDO::PARAM_STR);
             $query->bindValue(':user_phone', $_POST['phone'], PDO::PARAM_INT);
-            $query->bindValue(':user_password', $_POST['password'], PDO::PARAM_STR);
+            $query->bindValue(':user_password', encode($_POST['password']), PDO::PARAM_STR);
             $query->bindValue(':user_promotion_year', $_POST['promotion'], PDO::PARAM_INT);
             $query->bindValue(':user_signup', time(), PDO::PARAM_INT);
             if ($query->execute())

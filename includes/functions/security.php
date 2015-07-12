@@ -1,5 +1,4 @@
 <?php
-include('../credentials.php');
 
 /**
  * @brief Permet d'encoder une chaîne de caractères
@@ -42,7 +41,7 @@ function decode($Text_To_Decode)
 
 /**
  * @brief Fonction permettant de vérifier si l'utilisateur passé en paramètre est dans le bureau actuel
- * @param $user: ID de l'utilisateur recherché
+ * @param $user : ID de l'utilisateur recherché
  * @return bool
  */
 function checkPrivileges($user)
@@ -56,6 +55,42 @@ function checkPrivileges($user)
     if ($data = $query->fetchObject())
         if ($data->nb > 0)
             return true;
+    return false;
+}
+
+function generateToken($length = 50)
+{
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/*-+';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+function checkSession()
+{
+    global $db;
+    if ($_SESSION['connected'] == false && isset($_COOKIE['login'])) {
+        $login = json_decode($_COOKIE['login']);
+
+        $query = $db->prepare("SELECT * FROM user_logins
+                          LEFT JOIN users ON login_user = users.user_id
+                          WHERE login_token = :token AND login_key = :key");
+        $query->bindValue(':token', $login['token'], PDO::PARAM_STR);
+        $query->bindValue(':key', $login['key'], PDO::PARAM_STR);
+        $query->execute();
+        if ($query->rowCount() > 0) {
+            $data = $query->fetchObject();
+            $_SESSION['connected'] = true;
+            $_SESSION['informations'] = array("id" => $data->user_id,
+                "email" => $data->user_email,
+                "firstname" => $data->user_firstname,
+                "lastname" => $data->user_lastname);
+            return true;
+        }
+    }
     return false;
 }
 
