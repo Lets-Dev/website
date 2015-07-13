@@ -3,8 +3,8 @@
 /**
  * @file includes/queries/signin.php
  * @author Sofiane
- * @brief Fichier gérant la connexion d'un utilisateur
- * @warning Ne pas oublier de définir $_POST['method'] lors de la requête à ce fichier
+ * @brief Fichier gÃ©rant la connexion d'un utilisateur
+ * @warning Ne pas oublier de dÃ©finir $_POST['method'] lors de la requÃªte Ã  ce fichier
  * @return array: Tableau contenant une colonne "status", et un tableau contenant les messages dans la colonne "messages"
  */
 
@@ -55,15 +55,15 @@ switch ($_POST['method']) {
                 $query = $db->prepare("SELECT * FROM users WHERE user_email = :email");
                 $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
                 $query->execute();
-                // On vérifie que le compte existe
+                // On vï¿½rifie que le compte existe
                 if ($query->rowCount() > 0) {
                     $data = $query->fetchObject();
-                    // On vérifie les mots de passe
+                    // On vï¿½rifie les mots de passe
                     if ($data->user_password == encode($_POST['password'])) {
                         require_once '../libraries/user_agent.php';
-                        array_push($return['messages'], 'Vous êtes bien connecté.');
+                        array_push($return['messages'], 'Vous ï¿½tes bien connectï¿½.');
 
-                        // On génère un Token et une clé
+                        // On gï¿½nï¿½re un Token et une clï¿½
                         $token = generateToken(50);
                         $key = generateToken(50);
                         $insert = $db->prepare("INSERT INTO user_logins (login_token, login_key, login_user, login_time, login_platform, login_browser, login_ip)
@@ -77,7 +77,7 @@ switch ($_POST['method']) {
                         $insert->bindValue(':login_ip', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
                         $insert->execute();
 
-                        // Par cookie, on enregistre le token et la clé
+                        // Par cookie, on enregistre le token et la clï¿½
                         if ($_POST['type'] == 'cookie') {
                             setcookie("login", json_encode(array('token' => $token, 'key' => $key)), time() + 60 * 60 * 24 * 365);
                         } else {
@@ -90,17 +90,17 @@ switch ($_POST['method']) {
 
                     } else {
                         $return['status'] = 'error';
-                        array_push($return['messages'], 'Les informations de connexion sont erronnées.');
+                        array_push($return['messages'], 'Les informations de connexion sont erronnï¿½es.');
                     }
 
                 } else {
                     $return['status'] = 'error';
-                    array_push($return['messages'], 'L\'adresse e-mail saisie n\'a pas été reconnue.');
+                    array_push($return['messages'], 'L\'adresse e-mail saisie n\'a pas ï¿½tï¿½ reconnue.');
                 }
             }
         } else {
             $return['status'] = 'error';
-            array_push($return['messages'], 'Vous êtes déjà connecté.');
+            array_push($return['messages'], 'Vous ï¿½tes dï¿½jï¿½ connectï¿½.');
         }
         break;
 }
