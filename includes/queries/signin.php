@@ -55,17 +55,25 @@ switch ($_POST['method']) {
                 $query = $db->prepare("SELECT * FROM users WHERE user_email = :email");
                 $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
                 $query->execute();
-                // On v�rifie que le compte existe
+                // If the account exists
                 if ($query->rowCount() > 0) {
                     $data = $query->fetchObject();
-                    // On v�rifie les mots de passe
+                    // We check the password
                     if ($data->user_password == encode($_POST['password'])) {
                         require_once '../libraries/user_agent.php';
-                        array_push($return['messages'], 'Vous �tes bien connect�.');
+                        array_push($return['messages'], 'Vous êtes bien connecté.');
 
-                        // On g�n�re un Token et une cl�
-                        $token = generateToken(50);
-                        $key = generateToken(50);
+                        // We generate a token and a key, and we check if the combination exists
+                        do {
+                            $token = generateToken(50);
+                            $key = generateToken(50);
+                            $check = $db->prepare("SELECT * FROM user_logins WHERE login_token=:token AND login_key=:key");
+                            $check->bindValue(':token', $token, PDO::PARAM_STR);
+                            $check->bindValue(':key', $key, PDO::PARAM_STR);
+                            $check->execute();
+                        } while ($check->rowCount() != 0);
+
+                        // On enregistre la connexion
                         $insert = $db->prepare("INSERT INTO user_logins (login_token, login_key, login_user, login_time, login_platform, login_browser, login_ip)
                                       VALUES (:login_token, :login_key, :login_user, :login_time, :login_platform, :login_browser, :login_ip)");
                         $insert->bindValue(':login_token', $token, PDO::PARAM_STR);
@@ -77,7 +85,7 @@ switch ($_POST['method']) {
                         $insert->bindValue(':login_ip', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
                         $insert->execute();
 
-                        // Par cookie, on enregistre le token et la cl�
+                        // Par cookie, on enregistre le token et la clé
                         if ($_POST['type'] == 'cookie') {
                             setcookie("login", json_encode(array('token' => $token, 'key' => $key)), time() + 60 * 60 * 24 * 365);
                         } else {
@@ -87,20 +95,19 @@ switch ($_POST['method']) {
                                 "firstname" => $data->user_firstname,
                                 "lastname" => $data->user_lastname);
                         }
-
                     } else {
                         $return['status'] = 'error';
-                        array_push($return['messages'], 'Les informations de connexion sont erronn�es.');
+                        array_push($return['messages'], 'Les informations de connexion sont erronnées.');
                     }
 
                 } else {
                     $return['status'] = 'error';
-                    array_push($return['messages'], 'L\'adresse e-mail saisie n\'a pas �t� reconnue.');
+                    array_push($return['messages'], 'L\'adresse e-mail saisie n\'a pas été reconnue.');
                 }
             }
         } else {
             $return['status'] = 'error';
-            array_push($return['messages'], 'Vous �tes d�j� connect�.');
+            array_push($return['messages'], 'Vous êtes déjà connecté.');
         }
         break;
 }
