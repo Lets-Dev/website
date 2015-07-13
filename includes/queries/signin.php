@@ -1,18 +1,21 @@
 <?php
+
+/**
+ * @file includes/queries/signin.php
+ * @author Sofiane
+ * @brief Fichier gérant la connexion d'un utilisateur
+ * @warning Ne pas oublier de définir $_POST['method'] lors de la requête à ce fichier
+ * @return array: Tableau contenant une colonne "status", et un tableau contenant les messages dans la colonne "messages"
+ */
+
 session_start();
 if (!isset($_SESSION['connected']))
     $_SESSION['connected'] = false;
 include('../credentials.php');
 include('../functions/security.php');
-$return['status'] = 'success';
-$return['messages'] = array();
-/**
- * Cette page inscrit les utilisateurs dans la base de données.
- * Elle renvoie un tableau de la structure qui suit:
- * status: string
- * messages: array
- */
-
+include('../functions/encoding.php');
+header('Content-Type: application/json');
+$return = array('status' => 'success', 'messages' => array());
 switch ($_POST['method']) {
     // Sign Up with Facebook
     // TODO: Facebook Sign-Up
@@ -37,6 +40,10 @@ switch ($_POST['method']) {
     // Sign Up with... Let's Dev !
     default:
         if (!checkSession()) {
+            // Setting default values
+            if (empty($_POST['type']))
+                $_POST['type'] = 'session';
+
             // Check if all fields are filled
             if (empty($_POST['email']) || empty($_POST['password'])) {
                 $return['status'] = 'error';
@@ -71,7 +78,7 @@ switch ($_POST['method']) {
                         $insert->execute();
 
                         // Par cookie, on enregistre le token et la clé
-                        if ($_POST['method'] == 'cookie') {
+                        if ($_POST['type'] == 'cookie') {
                             setcookie("login", json_encode(array('token' => $token, 'key' => $key)), time() + 60 * 60 * 24 * 365);
                         } else {
                             $_SESSION['connected'] = true;
@@ -91,7 +98,10 @@ switch ($_POST['method']) {
                     array_push($return['messages'], 'L\'adresse e-mail saisie n\'a pas été reconnue.');
                 }
             }
+        } else {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous êtes déjà connecté.');
         }
         break;
 }
-echo json_encode($return);
+echo json_encode(array_to_utf8($return));
