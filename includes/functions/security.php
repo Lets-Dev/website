@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @brief Permet d'encoder une chaîne de caractères
- * @param $Text_To_Encode : texte à encoder
- * @return string: text encodé
+ * @brief Permet d'encoder une chaï¿½ne de caractï¿½res
+ * @param $Text_To_Encode : texte ï¿½ encoder
+ * @return string: text encodï¿½
  */
 function encode($Text_To_Encode)
 {
@@ -19,9 +19,9 @@ function encode($Text_To_Encode)
 }
 
 /**
- * @brief Permet de décoder une chaîne de caractères
- * @param $Text_To_Decode : texte à décoder
- * @return string: texte décodé
+ * @brief Permet de dï¿½coder une chaï¿½ne de caractï¿½res
+ * @param $Text_To_Decode : texte ï¿½ dï¿½coder
+ * @return string: texte dï¿½codï¿½
  */
 function decode($Text_To_Decode)
 {
@@ -40,8 +40,8 @@ function decode($Text_To_Decode)
 }
 
 /**
- * @brief Fonction permettant de vérifier si l'utilisateur passé en paramètre est dans le bureau actuel
- * @param $user : ID de l'utilisateur recherché
+ * @brief Fonction permettant de vï¿½rifier si l'utilisateur passï¿½ en paramï¿½tre est dans le bureau actuel
+ * @param $user : ID de l'utilisateur recherchï¿½
  * @return bool
  */
 function checkPrivileges($user)
@@ -69,10 +69,18 @@ function generateToken($length = 50)
     return $randomString;
 }
 
+/**
+ * @brief VÃ©rifie qu'un utilisateur est connectÃ©. S'il ne l'est pas, vÃ©rifie la prÃ©sence de token et de clÃ© et connecte l'utilisateur.
+ * @return bool
+ */
 function checkSession()
 {
     global $db;
-    if ($_SESSION['connected'] == false && isset($_COOKIE['login'])) {
+    // On regarde s'il est connectÃ©
+    if ($_SESSION['connected'] == true)
+        return true;
+    // On regarde si l'utilisateur n'est pas connectÃ© mais contient les tokens
+    else if ($_SESSION['connected'] == false && isset($_COOKIE['login'])) {
         $login = json_decode($_COOKIE['login']);
 
         $query = $db->prepare("SELECT * FROM user_logins
@@ -92,6 +100,18 @@ function checkSession()
         }
     }
     return false;
+}
+
+/**
+ * @brief Renvoie une information contenue dans la variable de session 'Informations'
+ * @param string $information
+ * @return mixed
+ */
+function getInformation($information = 'id') {
+    if (checkSession())
+        return $_SESSION['informations'][$information];
+    else
+        return false;
 }
 
 ?>
