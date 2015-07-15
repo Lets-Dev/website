@@ -33,6 +33,22 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
 
+        // On vérifie le shortname
+        if (!checkShortName($_POST['shortname'])) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'L\'alias de votre nom d\'équipe est invalide. Nous vous proposons: ' . url_slug($_POST['name']));
+        }
+
+        // On vérifie que le nom d'équipe n'est pas déjà pris
+        if (!checkEntryAvailability($_POST['name'], 'team_name', 'teams')) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Le nom d\'équipe choisi n\'est pas disponible');
+        }
+        if (!checkEntryAvailability($_POST['shortname'], 'team_shortname', 'teams')) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'L\'alias de nom d\'équipe choisi n\'est pas disponible');
+        }
+
         if ($return['status'] == 'success') {
             $mysql_key = "default";
             // TODO: Créer une base de données pour l'équipe
@@ -74,16 +90,80 @@ switch ($_POST['action']) {
 
             // Vérification du shortname
             case 'check':
+                if (!checkShortName($_POST['shortname'])) {
+                    $return['status'] = 'error';
+                    array_push($return['messages'], 'L\'alias de votre nom d\'équipe est invalide. Nous vous proposons: ' . url_slug($_POST['name']));
+                } else
+                    array_push($return['messages'], 'L\'alias de votre nom d\'équipe est valide.');
                 break;
         }
         break;
 
     // Modifier une équipe
     case 'edit':
+        // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
+        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+        }
+        $query->closeCursor();
+
+        // On vérifie que les champs ont bien été remplis
+        if (!isset($_POST['name']) || !isset($_POST['shortname']) || !isset($_POST['description'])) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Veuillez saisir tous les champs.');
+        }
+
+        // On vérifie le shortname
+        if (!checkShortName($_POST['shortname'])) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'L\'alias de votre nom d\'équipe est invalide. Nous vous proposons: ' . url_slug($_POST['name']));
+        }
+
+        // On vérifie que le nom d'équipe n'est pas déjà pris
+        if (!checkEntryAvailability($_POST['name'], 'team_name', 'teams')) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Le nom d\'équipe choisi n\'est pas disponible');
+        }
+        if (!checkEntryAvailability($_POST['shortname'], 'team_shortname', 'teams')) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'L\'alias de nom d\'équipe choisi n\'est pas disponible');
+        }
+
+        if ($return['status'] == 'success') {
+            $query = $db->prepare('UPDATE teams SET team_name = :name, team_shortname=:shortname, team_description=:description WHERE team_id=:id');
+            $query->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
+            $query->bindValue(':shortname', $_POST['shortname'], PDO::PARAM_STR);
+            $query->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
+            $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], "L'équipe a bien été mise à jour.");
+        }
         break;
 
     // Désactiver une équipe
     case 'disable':
+        // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
+        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+        }
+        $query->closeCursor();
+
+        if ($return['status'] == 'success') {
+            $query = $db->prepare('UPDATE teams SET team_status=0 WHERE team_id=:id');
+            $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], "L'équipe a bien été désactivée.");
+        }
         break;
 
     // Rejoindre une équipe
@@ -124,6 +204,62 @@ switch ($_POST['action']) {
             $query->execute();
             array_push($return['messages'], 'Votre demande d\'adhésion à l\'équipe a bien été effectuée.');
         }
+        break;
+
+    case 'join_answer':
+        if ($_POST['answer'] == 'yes')
+            $status = 1;
+        else if ($_POST['answer'] == 'no')
+            $status = 2;
+        else
+            $status = 0;
+
+        // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
+        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+        }
+        $query->closeCursor();
+
+        if ($return['status'] == 'success') {
+            $query = $db->prepare('UPDATE team_joins SET join_status=:status, join_time = :time WHERE join_team=:team AND join_user=:user');
+            $query->bindValue(':status', $status, PDO::PARAM_INT);
+            $query->bindValue(':time', time(), PDO::PARAM_INT);
+            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
+            $query->bindValue(':user', $_POST['user'], PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], 'L\'utilisateur a bien été ajouté à votre équipe.');
+        }
+
+        break;
+
+    case 'kick':
+
+        // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
+        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+        }
+        $query->closeCursor();
+
+        if ($return['status'] == 'success') {
+            $query = $db->prepare('UPDATE team_joins SET join_status=:status, join_leave = :time WHERE join_team=:team AND join_user=:user');
+            $query->bindValue(':status', 3, PDO::PARAM_INT);
+            $query->bindValue(':time', time(), PDO::PARAM_INT);
+            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
+            $query->bindValue(':user', $_POST['user'], PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], 'L\'utilisateur a bien été exclue de votre équipe.');
+        }
+
         break;
 }
 

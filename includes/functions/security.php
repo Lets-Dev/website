@@ -141,4 +141,13 @@ function isMember($user, $year)
     return false;
 }
 
+function checkEntryAvailability($entry, $column, $table) {
+    global $db;
+    $query = $db->prepare("select * from $table where $column = '$entry'");
+    $query -> execute();
+    if ($query -> rowCount() > 0)
+        return false;
+    return true;
+}
+
 ?>

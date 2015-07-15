@@ -133,3 +133,8 @@ function url_slug($str, $options = array()) {
 
     return $options['lowercase'] ? mb_strtolower($str, 'UTF-8') : $str;
 }
+
+function checkShortName($name)
+{
+    return preg_match('#^[a-z0-9_-]+$#', $name);
+}
