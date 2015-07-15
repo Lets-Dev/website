@@ -3,7 +3,7 @@
 ###Arba Yahya
 
 ###Canivez Martin
-- Twitter: @HypeFight
+- Twitter: @hype_fight
 
 ###Gargouri Sofiane
 - Twitter: @SofianeGargouri

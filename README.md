@@ -30,9 +30,7 @@ In order to correctly use this website, you need to create an include/credential
 ?>
 ```
 
-**BE CAREFUL :** Make sure to not upload the credentials.php file with your own credentials ! The file is listed in the .gitignore, but some IDEs don't take this file into account
-
-You can easily make sure this won't happen : just run the command "git update-index --assume-unchanged includes/credentials.php" in your git command promt, in your repo.
+**BE CAREFUL :** Make sure to not upload the credentials.php file with your own credentials !
 
 ## Authors
 
