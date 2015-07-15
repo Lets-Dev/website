@@ -20,7 +20,15 @@ The documentation for this project is available in the "doc" folder (to be opene
 
 ## Installation
 
-In order to correctly use this website, you need to change the include/credentials.php file and set your DB username and password.
+In order to correctly use this website, you need to create an include/credentials.php file and set your DB username and password, and the SALT key.
+
+```php
+<?php
+    $db = new PDO("mysql:host=sql.sofianeg.com;dbname=lets-dev","","");
+
+    $salt = '';
+?>
+```
 
 **BE CAREFUL :** Make sure to not upload the credentials.php file with your own credentials ! The file is listed in the .gitignore, but some IDEs don't take this file into account
 
