@@ -107,11 +107,38 @@ function checkSession()
  * @param string $information
  * @return mixed
  */
-function getInformation($information = 'id') {
+function getInformation($information = 'id')
+{
     if (checkSession())
         return $_SESSION['informations'][$information];
     else
         return false;
+}
+
+/**
+ * @brief Renvoie si un utilisateur était membre ou non pendant une année donnée.
+ * @param $user
+ * @param $year
+ * @return bool
+ */
+function isMember($user, $year)
+{
+    require_once './dates.php';
+    global $db;
+    $query = $db->prepare('SELECT * FROM user_subscriptions WHERE subscription_user = :user AND subscription_school_year = :year');
+    $query->bindValue(':user', $user, PDO::PARAM_INT);
+    $query->bindValue(':year', $year, PDO::PARAM_INT);
+    $query->execute();
+    if ($query->rowCount() > 0)
+        return true;
+    $query->closeCursor();
+    $query = $db->prepare('SELECT user_honor FROM users WHERE user_id = :user');
+    $query->bindValue(':user', $user, PDO::PARAM_INT);
+    $query->execute();
+    $data = $query->fetchObject();
+    if ($data->user_honor == 1)
+        return true;
+    return false;
 }
 
 ?>
