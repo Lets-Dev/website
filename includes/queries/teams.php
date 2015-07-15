@@ -3,6 +3,7 @@ include('../config.php');
 include('../credentials.php');
 include('../functions/security.php');
 include('../functions/encoding.php');
+include('../classes/notifications.php');
 header('Content-Type: application/json');
 
 $return = array('status' => 'success', 'messages' => array());
@@ -203,7 +204,17 @@ switch ($_POST['action']) {
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Votre demande d\'adhésion à l\'équipe a bien été effectuée.');
+            $query->closeCursor();
+
+            $query = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
+            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
+            $query->execute();
+            if ($data = $query->fetchObject()) {
+                $notification = new Notifications($data->team_owner);
+                $notification->create("Un utilisateur a demandé à rejoindre votre équipe.");
+            }
         }
+
         break;
 
     case 'join_answer':
@@ -225,7 +236,7 @@ switch ($_POST['action']) {
         }
         $query->closeCursor();
 
-        if ($return['status'] == 'success') {
+        if ($return['status'] == 'success' && $status == 1) {
             $query = $db->prepare('UPDATE team_joins SET join_status=:status, join_time = :time WHERE join_team=:team AND join_user=:user');
             $query->bindValue(':status', $status, PDO::PARAM_INT);
             $query->bindValue(':time', time(), PDO::PARAM_INT);
@@ -233,12 +244,20 @@ switch ($_POST['action']) {
             $query->bindValue(':user', $_POST['user'], PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'L\'utilisateur a bien été ajouté à votre équipe.');
+
+            $query = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
+            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
+            $query->execute();
+            if ($data = $query->fetchObject()) {
+                $notification = new Notifications($_POST['user']);
+                $notification->create("Vous avez été accepté dans l'équipe \"" . $data->team_name . "\".");
+                $notification->destruct();
+            }
         }
 
         break;
 
     case 'kick':
-
         // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
         $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
         $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
@@ -257,9 +276,17 @@ switch ($_POST['action']) {
             $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
             $query->bindValue(':user', $_POST['user'], PDO::PARAM_INT);
             $query->execute();
-            array_push($return['messages'], 'L\'utilisateur a bien été exclue de votre équipe.');
-        }
+            array_push($return['messages'], 'L\'utilisateur a bien été exclu de votre équipe.');
+            $query->closeCursor();
 
+            $query = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
+            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
+            $query->execute();
+            if ($data = $query->fetchObject()) {
+                $notification = new Notifications($_POST['user']);
+                $notification->create("Vous avez été exclu de l'équipe \"" . $data->team_name . "\".");
+            }
+        }
         break;
 }
 
