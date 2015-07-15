@@ -3,15 +3,15 @@
 /**
  * @file includes/queries/signup.php
  * @author Sofiane
- * @brief Fichier gérant l'inscription d'un utilisateur
- * @warning Ne pas oublier de définir $_POST['method'] lors de la requête à ce fichier
+ * @brief Fichier gï¿½rant l'inscription d'un utilisateur
+ * @warning Ne pas oublier de dï¿½finir $_POST['method'] lors de la requï¿½te ï¿½ ce fichier
  * @return array: Tableau contenant une colonne "status", et un tableau contenant les messages dans la colonne "messages"
  */
 
 include('../credentials.php');
 include('../functions/security.php');
 include('../functions/encoding.php');
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 $return = array('status' => 'success', 'messages' => array());
 
 switch ($_POST['method']) {
@@ -38,8 +38,10 @@ switch ($_POST['method']) {
     // Sign Up with... Let's Dev !
     default:
         // Set default values
-        $_POST['promotion'] = default_value($_POST['promotion'], 0);
-        $_POST['phone'] = default_value($_POST['phone'], 0);
+        if (!isset($_POST['promotion']))
+            $_POST['promotion']=0;
+        if (!isset($_POST['phone']))
+            $_POST['phone']=0;
 
         // Check if all fields are filled
         if (empty($_POST['firstname']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm'])) {
@@ -50,7 +52,7 @@ switch ($_POST['method']) {
         // Check if passwords are the same
         if ($_POST['password'] != $_POST['confirm']) {
             $return['status'] = 'error';
-            array_push($return['messages'], 'Les mots de passe saisis sont différents.');
+            array_push($return['messages'], 'Les mots de passe saisis sont diffÃ©rents.');
         }
 
         // Check if e-mail is already used
@@ -63,7 +65,7 @@ switch ($_POST['method']) {
             if ($data = $query->fetchObject())
                 if ($data->nb != 0) {
                     $return['status'] = 'error';
-                    array_push($return['messages'], 'Cet utilisateur existe déjà.');
+                    array_push($return['messages'], 'Cet utilisateur existe dÃ©jÃ .');
                 }
         }
 
@@ -79,8 +81,9 @@ switch ($_POST['method']) {
             $query->bindValue(':user_promotion_year', $_POST['promotion'], PDO::PARAM_INT);
             $query->bindValue(':user_signup', time(), PDO::PARAM_INT);
             $query->execute();
-            array_push($return['messages'], 'Vous avez bien été inscrits.');
+            array_push($return['messages'], 'Vous avez bien Ã©tÃ© inscrit.');
         }
         break;
 }
 echo json_encode(array_to_utf8($return));
+?>

@@ -10,7 +10,7 @@ function array_to_utf8($array) {
             $array[$k] = array_to_utf8($v);
         }
     } else if (is_string ($array)) {
-        return utf8_encode($array);
+        return htmlspecialchars_decode(htmlentities($array, ENT_NOQUOTES, "UTF-8"));
     }
     return $array;
 }

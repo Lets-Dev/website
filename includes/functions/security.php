@@ -81,6 +81,8 @@ function generateToken($length = 50)
 function checkSession()
 {
     global $db;
+    if (!isset($_SESSION['connected']))
+        return false;
     // On regarde s'il est connecté
     if ($_SESSION['connected'] == true)
         return true;
