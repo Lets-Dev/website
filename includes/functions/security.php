@@ -58,6 +58,11 @@ function checkPrivileges($user)
     return false;
 }
 
+/**
+ * @brief Génère un token de la longueur désirée
+ * @param int $length
+ * @return string
+ */
 function generateToken($length = 50)
 {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/*-+';
@@ -141,6 +146,13 @@ function isMember($user, $year)
     return false;
 }
 
+/**
+ * @brief Vérifie qu'une entrée est présente ou non dans une colonne d'une table de la base de données
+ * @param $entry
+ * @param $column
+ * @param $table
+ * @return bool
+ */
 function checkEntryAvailability($entry, $column, $table) {
     global $db;
     $query = $db->prepare("select * from $table where $column = '$entry'");

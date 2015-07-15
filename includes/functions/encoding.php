@@ -1,4 +1,9 @@
 <?php
+/**
+ * @brief Convertit les éléments d'un tableau en UTF-8
+ * @param $array
+ * @return array|string
+ */
 function array_to_utf8($array) {
     if (is_array($array)) {
         foreach ($array as $k => $v) {
@@ -10,6 +15,12 @@ function array_to_utf8($array) {
     return $array;
 }
 
+/**
+ * @brief Donne une valeur par défaut à ne variable si elle est vide
+ * @param $var
+ * @param $default
+ * @return mixed
+ */
 function default_value($var, $default) {
     return empty($var) ? $default : $var;
 }
@@ -134,7 +145,14 @@ function url_slug($str, $options = array()) {
     return $options['lowercase'] ? mb_strtolower($str, 'UTF-8') : $str;
 }
 
+/**
+ * @brief Vérifie qu'une chaîne de caractère est elligible pour être une URL
+ * @param $name
+ * @return bool
+ */
 function checkShortName($name)
 {
-    return preg_match('#^[a-z0-9_-]+$#', $name);
+    if (preg_match('#^[a-z0-9_-]+$#', $name) == 1)
+        return true;
+    return false;
 }
