@@ -11,6 +11,7 @@
 include('../credentials.php');
 include('../functions/security.php');
 include('../functions/encoding.php');
+include('../functions/users.php');
 header('Content-Type: application/json; charset=utf-8');
 $return = array('status' => 'success', 'messages' => array());
 
@@ -39,9 +40,9 @@ switch ($_POST['method']) {
     default:
         // Set default values
         if (!isset($_POST['promotion']))
-            $_POST['promotion']=0;
+            $_POST['promotion']=null;
         if (!isset($_POST['phone']))
-            $_POST['phone']=0;
+            $_POST['phone']=null;
 
         // Check if all fields are filled
         if (empty($_POST['firstname']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm'])) {
@@ -71,16 +72,7 @@ switch ($_POST['method']) {
 
         // If everything is ok
         if ($return['status'] == 'success') {
-            $query = $db->prepare("INSERT INTO users (user_firstname, user_lastname, user_email, user_phone, user_password, user_promotion_year, user_signup)
-                            VALUES (:user_firstname, :user_lastname, :user_email, :user_phone, :user_password, :user_promotion_year, :user_signup)");
-            $query->bindValue(':user_firstname', $_POST['firstname'], PDO::PARAM_STR);
-            $query->bindValue(':user_lastname', $_POST['lastname'], PDO::PARAM_STR);
-            $query->bindValue(':user_email', $_POST['email'], PDO::PARAM_STR);
-            $query->bindValue(':user_phone', $_POST['phone'], PDO::PARAM_STR);
-            $query->bindValue(':user_password', encode($_POST['password']), PDO::PARAM_STR);
-            $query->bindValue(':user_promotion_year', $_POST['promotion'], PDO::PARAM_INT);
-            $query->bindValue(':user_signup', time(), PDO::PARAM_INT);
-            $query->execute();
+            addUser($_POST['firstname'],$_POST['lastname'], $_POST['email'], $_POST['phone'], encode($_POST['password']),$_POST['promotion']);
             array_push($return['messages'], 'Vous avez bien été inscrit.');
         }
         break;

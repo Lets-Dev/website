@@ -7,7 +7,8 @@ $config = array(
         ),
     'users' =>
         array(
-            'max_teams' => 1
+            'max_teams' => 1,
+            'default_avatar' => 'http://sofianeg.com/lets-dev/assets/img/public/default_avatar.png'
         ),
     'challenges' =>
         array(

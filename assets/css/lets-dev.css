@@ -142,3 +142,8 @@
 .skin-black .treeview-menu > li > a:hover {
   color: #fff3e3;
 }
+.content-wrapper,
+.right-side {
+  background: #d6c7cb;
+  margin: 60px 10px 10px 240px;
+}
