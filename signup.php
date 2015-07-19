@@ -1,25 +1,15 @@
 <?php
 session_start();
+include('includes/credentials.php');
 include('includes/functions/security.php');
 if (checkSession())
     header('Location: manager?alert=already_loggedin');
+include('includes/layouts/sign_header.html');
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/fontawesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/AdminLTE.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/skins/skin-blue.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/lets-dev.min.css"/>
-    <title>Let's Dev ! - Connexion</title>
-</head>
-<body class="login-page" id="wallpaper" onload="getWallpaper()">
+<body class="login-page" id="wallpaper" onload="getWallpaper();changeTitle('Let\'s Dev ! - Inscription')">
 <div class="login-box">
     <div class="login-logo">
-        <a href="./"><b>Let's</b> Dev !</a>
+        <img src="assets/img/public/banner.png" class="img-responsive" />
     </div>
     <div class="login-box-body">
         <div class="login-box-msg">
@@ -28,6 +18,7 @@ if (checkSession())
             </div>
         </div>
         <form method="post" id="signup">
+            <h3>Inscription</h3>
             <input type="hidden" name="method" value="lets-dev"/>
 
             <div class="form-group has-feedback">
@@ -43,7 +34,7 @@ if (checkSession())
                 <span class="fa fa-envelope form-control-feedback" style="line-height: 34px;"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="text" class="form-control" placeholder="Téléphone" name="phone"/>
+                <input type="text" class="form-control" placeholder="Téléphone (facultatif)" name="phone"/>
                 <span class="fa fa-phone form-control-feedback" style="line-height: 34px;"></span>
             </div>
             <div class="form-group has-feedback">
@@ -99,7 +90,7 @@ if (checkSession())
             success: function (data) {
                 console.log(data);
                 if (data.status === "success") {
-                    window.location = "./login.php";
+                    window.location = "./signin.php";
                 }
                 else {
                     $('#alert-div').fadeIn().addClass('callout-danger');

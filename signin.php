@@ -1,25 +1,15 @@
 <?php
 session_start();
+include('includes/credentials.php');
 include('includes/functions/security.php');
 if (checkSession())
     header('Location: manager?alert=already_loggedin');
+include('includes/layouts/sign_header.html');
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/fontawesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/AdminLTE.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/skins/skin-blue.min.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/lets-dev.min.css"/>
-    <title>Let's Dev ! - Connexion</title>
-</head>
-<body class="login-page" id="wallpaper" onload="getWallpaper()">
+<body class="login-page" id="wallpaper" onload="getWallpaper();changeTitle('Let\'s Dev ! - Connexion')">
 <div class="login-box">
     <div class="login-logo">
-        <a href="./"><b>Let's</b> Dev !</a>
+        <img src="assets/img/public/banner.png" class="img-responsive" />
     </div>
     <div class="login-box-body">
         <div class="login-box-msg">
@@ -28,8 +18,8 @@ if (checkSession())
             </div>
         </div>
         <form method="post" id="signin">
+            <h3>Connexion</h3>
             <input type="hidden" name="method" value="lets-dev"/>
-
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Adresse E-Mail" name="email" required/>
                 <span class="fa fa-envelope form-control-feedback" style="line-height: 34px;"></span>
@@ -41,7 +31,7 @@ if (checkSession())
             <div class="row">
                 <div class="col-xs-8">
                     <label>
-                        <input type="checkbox"> Se souvenir de moi
+                        <input type="checkbox" name="type" value="cookie" /> Se souvenir de moi
                     </label>
                 </div>
                 <div class="col-xs-4">
@@ -76,7 +66,7 @@ if (checkSession())
             success: function (data) {
                 console.log(data);
                 if (data.status === "success") {
-                    window.location = "./manager";
+                    window.location = "./manager?alert=loggedin";
                 }
                 else {
                     $('#alert-div').fadeIn().addClass('callout-danger');

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @brief Permet d'encoder une cha�ne de caract�res
- * @param $Text_To_Encode : texte � encoder
- * @return string: text encod�
+ * @brief Permet d'encoder une chaîne de caractères
+ * @param $Text_To_Encode : texte à encoder
+ * @return string: text encodé
  */
 function encode($Text_To_Encode)
 {
@@ -19,9 +19,9 @@ function encode($Text_To_Encode)
 }
 
 /**
- * @brief Permet de d�coder une cha�ne de caract�res
- * @param $Text_To_Decode : texte � d�coder
- * @return string: texte d�cod�
+ * @brief Permet de décoder une chaîne de caractères
+ * @param $Text_To_Decode : texte à décoder
+ * @return string: texte décodé
  */
 function decode($Text_To_Decode)
 {
@@ -81,14 +81,12 @@ function generateToken($length = 50)
 function checkSession()
 {
     global $db;
-    if (!isset($_SESSION['connected']))
-        return false;
     // On regarde s'il est connecté
-    if ($_SESSION['connected'] == true)
+    if (isset($_SESSION['connected']) && $_SESSION['connected'] == true)
         return true;
     // On regarde si l'utilisateur n'est pas connecté mais contient les tokens
-    else if ($_SESSION['connected'] == false && isset($_COOKIE['login'])) {
-        $login = json_decode($_COOKIE['login']);
+    else if ((!isset($_SESSION['connected']) || $_SESSION['connected'] == false) && isset($_COOKIE['login'])) {
+        $login = json_decode($_COOKIE['login'], true);
 
         $query = $db->prepare("SELECT * FROM user_logins
                           LEFT JOIN users ON login_user = users.user_id
@@ -130,7 +128,7 @@ function getInformation($information = 'id')
  */
 function isMember($user, $year)
 {
-    require_once './dates.php';
+    require_once 'dates.php';
     global $db;
     $query = $db->prepare('SELECT * FROM user_subscriptions WHERE subscription_user = :user AND subscription_school_year = :year');
     $query->bindValue(':user', $user, PDO::PARAM_INT);

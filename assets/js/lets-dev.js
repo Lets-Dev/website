@@ -3,3 +3,6 @@ function getWallpaper() {
         $('#wallpaper').css({'background':'url('+data.url+') no-repeat fixed','background-size':'cover', 'background-position':'center center'})
     });
 }
+function changeTitle(title) {
+    document.title = title;
+}

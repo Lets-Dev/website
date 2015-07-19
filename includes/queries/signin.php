@@ -12,6 +12,7 @@ session_start();
 if (!isset($_SESSION['connected']))
     $_SESSION['connected'] = false;
 include('../credentials.php');
+include('../config.php');
 include('../functions/security.php');
 include('../functions/encoding.php');
 header('Content-Type: application/json; charset=utf-8');
@@ -87,7 +88,7 @@ switch ($_POST['method']) {
 
                         // Par cookie, on enregistre le token et la clé
                         if ($_POST['type'] == 'cookie') {
-                            setcookie("login", json_encode(array('token' => $token, 'key' => $key)), time() + 60 * 60 * 24 * 365);
+                            setcookie("login", json_encode(array('token' => $token, 'key' => $key)), time() + 60 * 60 * 24 * 365, $config['path']);
                         } else {
                             $_SESSION['connected'] = true;
                             $_SESSION['informations'] = array("id" => $data->user_id,
