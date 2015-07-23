@@ -190,6 +190,7 @@ if (isset($_GET['login'])) {
 
 <script src="assets/js/jquery.min.js" type="text/javascript"></script>
 <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="assets/js/toastr/toastr.min.js" type="text/javascript"></script>
 <script src="assets/js/lets-dev.min.js" type="text/javascript"></script>
 <script>
     $("#signin").submit(function () {
@@ -217,5 +218,19 @@ if (isset($_GET['login'])) {
         return false;
     });
 </script>
+
+<?php
+if (isset($_GET['alert'])) {
+    echo "<script>
+    toastr.options = {'positionClass': 'toast-top-center'};
+    $(document).ready(function() {";
+    switch($_GET['alert']) {
+        case 'already_registered':
+            echo "toastr['warning']('Vous êtes déjà inscrit.')";
+            break;
+    }
+    echo "}) </script>";
+}
+?>
 </body>
 </html>
