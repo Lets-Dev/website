@@ -12,3 +12,17 @@
     <link rel="icon" href="assets/img/public/logo.png" />
     <title>Let's Dev !</title>
 </head>
+<?php
+$onload = "getWallpaper();changeTitle('Let\'s Dev ! - Connexion');toastr.options = {'positionClass': 'toast-top-center'};";
+if (isset($_GET['alert'])) {
+    switch($_GET['alert']) {
+        case 'already_registered':
+            $onload .= "toastr['warning']('Vous êtes déjà inscrit.')";
+            break;
+        case 'not_registered':
+            $onload .= "toastr['error']('Vous n\'êtes pas encore inscrit.')";
+            break;
+    }
+}
+?>
+<body class="login-page" id="wallpaper" onload="<?php echo $onload; ?>">

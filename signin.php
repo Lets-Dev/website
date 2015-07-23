@@ -4,7 +4,7 @@ include('includes/credentials.php');
 include('includes/functions/security.php');
 if (checkSession())
     header('Location: manager?alert=already_loggedin');
-include('includes/layouts/sign_header.html');
+include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
 include('includes/libraries/user_agent.php');
 
@@ -218,19 +218,5 @@ if (isset($_GET['login'])) {
         return false;
     });
 </script>
-
-<?php
-if (isset($_GET['alert'])) {
-    echo "<script>
-    toastr.options = {'positionClass': 'toast-top-center'};
-    $(document).ready(function() {";
-    switch($_GET['alert']) {
-        case 'already_registered':
-            echo "toastr['warning']('Vous êtes déjà inscrit.')";
-            break;
-    }
-    echo "}) </script>";
-}
-?>
 </body>
 </html>
