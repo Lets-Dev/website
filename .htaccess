@@ -1,0 +1,9 @@
+Options +FollowSymLinks -MultiViews
+# Turn mod_rewrite on
+RewriteEngine On
+RewriteBase /lets-dev
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(manager)/(team)/(create)$ $1/teams.php?$2=$3
+RewriteRule ^(manager)/(team)/([a-z0-9_-]+)$ $1/teams.php?$2=$3
+RewriteRule ^(manager)/([^\.]+)$ $1/$2.php [NC,L]

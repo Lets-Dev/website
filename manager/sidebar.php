@@ -5,7 +5,7 @@
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
             <li class="active">
-                <a href="./"><i class="fa fa-dashboard"></i> Dashboard</a>
+                <a href="index"><i class="fa fa-dashboard"></i> Dashboard</a>
             </li>
             <li class="treeview">
                 <a href="#">
@@ -13,8 +13,11 @@
                 </a>
                 <ul class="treeview-menu">
                     <li>
-                        <a href="myteam.php">Mon Équipe</a>
-                        <a href="teams.php">Parcourir les Équipes</a>
+                        <?php
+                        if (hasTeam(getInformation()))
+                        echo '<a href="teams/myteam">Mon Équipe</a>';
+                        ?>
+                        <a href="teams">Parcourir les Équipes</a>
                     </li>
                 </ul>
             </li>
@@ -24,8 +27,8 @@
                 </a>
                 <ul class="treeview-menu">
                     <li>
-                        <a href="challenges.php">Challenge en cours</a>
-                        <a href="challenges.php">Tous les Challenges</a>
+                        <a href="challenges">Challenge en cours</a>
+                        <a href="challenges">Tous les Challenges</a>
                     </li>
                 </ul>
             </li>

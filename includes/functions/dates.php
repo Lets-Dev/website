@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @brief Renvoie l'intervalle de temps dans laquelle une année scolaire est définie
- * @param $year: année que nous voulons récupérer
+ * @brief Renvoie l'intervalle de temps dans laquelle une annï¿½e scolaire est dï¿½finie
+ * @param $year: annï¿½e que nous voulons rï¿½cupï¿½rer
  * @return string
  */
 function getSchoolYear($year) {
@@ -11,7 +11,7 @@ function getSchoolYear($year) {
 }
 
 /**
- * @brief Fonction permettant de récupérer l'année scolaire dans laquelle nous sommes actuellement
+ * @brief Fonction permettant de rï¿½cupï¿½rer l'annï¿½e scolaire dans laquelle nous sommes actuellement
  * @return integer
  */
 function getCurrentYear() {
@@ -19,4 +19,39 @@ function getCurrentYear() {
         return date('Y') - 1;
     else
         return date('Y');
+}
+
+function date_fr($format, $timestamp=false) {
+    if ( !$timestamp ) $date_en = date($format);
+    else               $date_en = date($format,$timestamp);
+
+    $texte_en = array(
+        "Monday", "Tuesday", "Wednesday", "Thursday",
+        "Friday", "Saturday", "Sunday", "January",
+        "February", "March", "April", "May",
+        "June", "July", "August", "September",
+        "October", "November", "December"
+    );
+    $texte_fr = array(
+        "Lundi", "Mardi", "Mercredi", "Jeudi",
+        "Vendredi", "Samedi", "Dimanche", "Janvier",
+        "F&eacute;vrier", "Mars", "Avril", "Mai",
+        "Juin", "Juillet", "Ao&ucirc;t", "Septembre",
+        "Octobre", "Novembre", "D&eacute;cembre"
+    );
+    $date_fr = str_replace($texte_en, $texte_fr, $date_en);
+
+    $texte_en = array(
+        "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun",
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct", "Nov", "Dec"
+    );
+    $texte_fr = array(
+        "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim",
+        "Jan", "F&eacute;v", "Mar", "Avr", "Mai", "Jui",
+        "Jui", "Ao&ucirc;", "Sep", "Oct", "Nov", "D&eacute;c"
+    );
+    $date_fr = str_replace($texte_en, $texte_fr, $date_fr);
+
+    return $date_fr;
 }

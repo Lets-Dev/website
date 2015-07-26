@@ -1,13 +1,10 @@
 <?php
-session_start();
-include('includes/credentials.php');
-include('includes/functions/security.php');
-include('includes/functions/users.php');
+include('includes/autoload.php');
 if (checkSession())
     header('Location: manager?alert=already_loggedin');
 include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
-include('includes/libraries/user_agent.php'); ?>
+?>
 
 <body class="login-page" id="wallpaper" onload="getWallpaper();changeTitle('Let\'s Dev ! - Inscription')">
 <div class="login-box">
@@ -127,27 +124,27 @@ switch ($register) {
 
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Prénom" name="firstname" value="<?php echo $user['first_name']; ?>" required readonly="readonly"/>
-                <span class="fa fa-user form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Nom" name="lastname" value="<?php echo $user['last_name']; ?>" required readonly="readonly"/>
-                <span class="fa fa-user form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Adresse E-Mail" name="email" value="<?php echo $user['email']; ?>" required readonly="readonly"/>
-                <span class="fa fa-envelope form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Téléphone (facultatif)" name="phone"/>
-                <span class="fa fa-phone form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-phone form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Mot de Passe" name="password" required/>
-                <span class="fa fa-lock form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Confirmation" name="confirm" required/>
-                <span class="fa fa-lock form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <select class="form-control" name="promotion">
@@ -158,7 +155,7 @@ switch ($register) {
                     }
                     ?>
                 </select>
-                <span class="fa fa-calendar form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-calendar form-control-feedback"></span>
             </div>
 
             <div class="row">
@@ -184,27 +181,27 @@ switch ($register) {
 
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Prénom" name="firstname" required/>
-                <span class="fa fa-user form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Nom" name="lastname" required/>
-                <span class="fa fa-user form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Adresse E-Mail" name="email" required/>
-                <span class="fa fa-envelope form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="text" class="form-control" placeholder="Téléphone (facultatif)" name="phone"/>
-                <span class="fa fa-phone form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-phone form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Mot de Passe" name="password" required/>
-                <span class="fa fa-lock form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Confirmation" name="confirm" required/>
-                <span class="fa fa-lock form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <select class="form-control" name="promotion">
@@ -215,7 +212,7 @@ switch ($register) {
                     }
                     ?>
                 </select>
-                <span class="fa fa-calendar form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-calendar form-control-feedback"></span>
             </div>
 
             <div class="row">
@@ -259,12 +256,9 @@ switch ($register) {
                     window.location = "./signin.php";
                 }
                 else {
-                    $('#alert-div').fadeIn().addClass('callout-danger');
-                    $('#alert-icon').addClass('fa-warning');
-                    var text, i;
+                    var i;
                     for (i = 0; i < data.messages.length; i++)
-                        text = data.messages[i] + '<br/>';
-                    $('#alert-text').html(text);
+                        toastr["error"](data.messages[i])
                 }
                 $('.btn').removeAttr('disabled');
             }

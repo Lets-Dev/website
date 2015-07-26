@@ -1,9 +1,5 @@
 <?php
-include('../config.php');
-include('../credentials.php');
-include('../functions/security.php');
-include('../functions/encoding.php');
-include('../classes/notifications.php');
+include('../autoload.php');
 header('Content-Type: application/json');
 
 $return = array('status' => 'success', 'messages' => array());
@@ -45,7 +41,7 @@ switch ($_POST['action']) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Le nom d\'équipe choisi n\'est pas disponible');
         }
-        if (!checkEntryAvailability($_POST['shortname'], 'team_shortname', 'teams')) {
+        if (!checkEntryAvailability($_POST['shortname'], 'team_shortname', 'teams') || $_POST['shortname'] == 'myteam') {
             $return['status'] = 'error';
             array_push($return['messages'], 'L\'alias de nom d\'équipe choisi n\'est pas disponible');
         }

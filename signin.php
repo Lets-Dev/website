@@ -1,12 +1,9 @@
 <?php
-session_start();
-include('includes/credentials.php');
-include('includes/functions/security.php');
+include('includes/autoload.php');
 if (checkSession())
     header('Location: manager?alert=already_loggedin');
 include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
-include('includes/libraries/user_agent.php');
 
 $fb = new Facebook\Facebook([
     'app_id' => $facebook['APP_ID'],
@@ -157,11 +154,11 @@ if (isset($_GET['login'])) {
 
             <div class="form-group has-feedback">
                 <input type="email" class="form-control" placeholder="Adresse E-Mail" name="email" required/>
-                <span class="fa fa-envelope form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="Mot de Passe" name="password" required/>
-                <span class="fa fa-lock form-control-feedback" style="line-height: 34px;"></span>
+                <span class="fa fa-lock form-control-feedback"></span>
             </div>
             <div class="row">
                 <div class="col-xs-8">
@@ -205,12 +202,9 @@ if (isset($_GET['login'])) {
                     window.location = "./manager?alert=loggedin";
                 }
                 else {
-                    $('#alert-div').fadeIn().addClass('callout-danger');
-                    $('#alert-icon').addClass('fa-warning');
-                    var text, i;
+                    var i;
                     for (i = 0; i < data.messages.length; i++)
-                        text = data.messages[i] + '<br/>';
-                    $('#alert-text').html(text);
+                        toastr["error"](data.messages[i])
                 }
                 $('.btn').removeAttr('disabled');
             }
