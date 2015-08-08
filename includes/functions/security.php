@@ -42,19 +42,31 @@ function decode($Text_To_Decode)
 /**
  * @brief Fonction permettant de v�rifier si l'utilisateur pass� en param�tre est dans le bureau actuel
  * @param $user : ID de l'utilisateur recherch�
+ * @param $rank
  * @return bool
  */
-function checkPrivileges($user)
+function checkPrivileges($user, $rank = null)
 {
     require_once "dates.php";
     global $db;
-    $query = $db->prepare('SELECT count(*) AS nb FROM desks WHERE :user IN (desk_president, desk_secretary, desk_treasurer, desk_challenges, desk_communication, desk_jurys) AND desk_year = :year');
-    $query->bindValue(':user', $user, PDO::PARAM_INT);
-    $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
-    $query->execute();
-    if ($data = $query->fetchObject())
-        if ($data->nb > 0)
-            return true;
+    if ($rank == null) {
+        $query = $db->prepare('SELECT count(*) AS nb FROM desks WHERE :user IN (desk_president, desk_secretary, desk_treasurer, desk_challenges, desk_communication, desk_jurys) AND desk_year = :year');
+        $query->bindValue(':user', $user, PDO::PARAM_INT);
+        $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
+        $query->execute();
+        if ($data = $query->fetchObject())
+            if ($data->nb > 0)
+                return true;
+    }
+    else {
+        $query = $db->prepare('SELECT count(*) AS nb FROM desks WHERE '.$rank.' = :user AND desk_year = :year');
+        $query->bindValue(':user', $user, PDO::PARAM_INT);
+        $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
+        $query->execute();
+        if ($data = $query->fetchObject())
+            if ($data->nb > 0)
+                return true;
+    }
     return false;
 }
 
@@ -112,12 +124,25 @@ function checkSession()
  * @param string $information
  * @return mixed
  */
-function getInformation($information = 'id')
+function getInformation($information = 'id', $user = null)
 {
-    if (checkSession())
-        return $_SESSION['informations'][$information];
-    else
-        return false;
+    global $db;
+    if ($user == null) {
+        if (checkSession())
+            return $_SESSION['informations'][$information];
+        else
+            return false;
+    }
+    else {
+        $query = $db -> prepare('select * from users where user_id = :id');
+        $query -> bindValue(':id', $user, PDO::PARAM_INT);
+        $query -> execute();
+        if ($data = $query -> fetch()) {
+            return $data['user_'.$information];
+        }
+        else
+            return false;
+    }
 }
 
 /**
@@ -155,11 +180,29 @@ function isMember($user, $year)
  */
 function checkEntryAvailability($entry, $column, $table) {
     global $db;
-    $query = $db->prepare("select * from $table where $column = '$entry'");
+    $query = $db->prepare("select * from $table where $column = \"$entry\"");
     $query -> execute();
     if ($query -> rowCount() > 0)
         return false;
     return true;
 }
 
+function redirect($url)
+{
+    $string = '<script type="text/javascript">';
+    $string .= 'window.location = "' . $url . '"';
+    $string .= '</script>';
+
+    echo $string;
+}
+
+function ArrayHasDuplicates($array){
+    $dupe_array = array();
+    foreach($array as $val){
+        if(++$dupe_array[$val] > 1){
+            return true;
+        }
+    }
+    return false;
+}
 ?>

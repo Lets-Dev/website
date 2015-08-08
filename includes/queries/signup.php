@@ -8,10 +8,7 @@
  * @return array: Tableau contenant une colonne "status", et un tableau contenant les messages dans la colonne "messages"
  */
 
-include('../credentials.php');
-include('../functions/security.php');
-include('../functions/encoding.php');
-include('../functions/users.php');
+include('../autoload.php');
 header('Content-Type: application/json; charset=utf-8');
 $return = array('status' => 'success', 'messages' => array());
 
@@ -78,6 +75,7 @@ if ($return['status'] == 'success') {
             break;
     }
     array_push($return['messages'], 'Vous avez bien été inscrit.');
+    slack("<mailto:".$_POST['email']."|".$_POST['email'].">",true,"Un nouvel utilisateur vient de s'inscrire.", ucfirst(strtolower($_POST['firstname']))." ".ucfirst(strtolower($_POST['lastname'])),"green");
 }
 echo json_encode(array_to_utf8($return));
 ?>

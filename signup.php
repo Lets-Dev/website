@@ -1,7 +1,8 @@
 <?php
 include('includes/autoload.php');
 if (checkSession())
-    header('Location: manager?alert=already_loggedin');
+    header('Location: manager/index?alert=already_loggedin');
+include('includes/version.php');
 include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
 ?>
@@ -30,7 +31,7 @@ $helper = $fb->getRedirectLoginHelper();
 $permissions = ['email']; // Optional permissions
 
 // TODO: change callback URL
-$fb_loginUrl = $helper->getLoginUrl('http://localhost/lets-dev/signup.php?register=facebook', $permissions);
+$fb_loginUrl = $helper->getLoginUrl($url.'signup?register=facebook', $permissions);
 
 if (isset($_GET['register']))
     $register = $_GET['register'];
@@ -223,7 +224,7 @@ switch ($register) {
         </form>
         <div class="login-separator text-center">
             <p>- OU -</p>
-            <a href="signin.php">Déjà inscrit ?</a>
+            <a href="signin">Déjà inscrit ?</a>
         </div>
 
         <div class="social-auth-links text-center">
@@ -242,6 +243,7 @@ switch ($register) {
 <script src="assets/js/jquery.min.js" type="text/javascript"></script>
 <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="assets/js/toastr/toastr.min.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap-markdown/js/bootstrap-markdown.min.js"></script>
 <script src="assets/js/lets-dev.min.js" type="text/javascript"></script>
 <script>
     $("#signup").submit(function () {
@@ -253,7 +255,7 @@ switch ($register) {
             success: function (data) {
                 console.log(data);
                 if (data.status === "success") {
-                    window.location = "./signin.php";
+                    window.location = "./signin";
                 }
                 else {
                     var i;

@@ -1,5 +1,5 @@
 <?php
-include('../credentials.php');
+include('../autoload.php');
 $return = array('status' => 'success', 'messages' => array());
 
 switch ($_POST['action']) {
@@ -59,7 +59,7 @@ switch ($_POST['action']) {
 
     // Marquer un utilisateur comme membre d'honneur
     case 'honnor':
-        if (checkPrivileges(get_current_user()))
+        if (checkPrivileges(get_current_user(), null))
             return;
         break;
     default:

@@ -6,7 +6,8 @@ include('sidebar.php');
 ?>
 
 <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Manager')">
-
+    <div class="box">
+    </div>
 </div>
 
 <?php

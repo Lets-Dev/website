@@ -1,7 +1,8 @@
 <?php
 include('includes/autoload.php');
 if (checkSession())
-    header('Location: manager?alert=already_loggedin');
+    header('Location: manager/index?alert=already_loggedin');
+include('includes/version.php');
 include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
 
@@ -15,7 +16,7 @@ $helper = $fb->getRedirectLoginHelper();
 $permissions = ['email']; // Optional permissions
 
 // TODO: change callback URL
-$fb_loginUrl = $helper->getLoginUrl('http://localhost/lets-dev/signin.php?login=facebook', $permissions);
+$fb_loginUrl = $helper->getLoginUrl($url.'signin?login=facebook', $permissions);
 
 if (isset($_GET['login'])) {
     switch ($_GET['login']) {
@@ -125,10 +126,10 @@ if (isset($_GET['login'])) {
                     "email" => $data->user_email,
                     "firstname" => $data->user_firstname,
                     "lastname" => $data->user_lastname);
-                header("Location:manager?alert=loggedin");
+                header("Location: ./manager/index?alert=loggedin");
             }
             else {
-                header('Location:signup.php?alert=not_registered');
+                header('Location: ./signup?alert=not_registered');
             }
 
 
@@ -173,7 +174,7 @@ if (isset($_GET['login'])) {
         </form>
         <div class="login-separator text-center">
             <p>- OU -</p>
-            <a href="signup.php">Pas encore inscrit ?</a>
+            <a href="signup">Pas encore inscrit ?</a>
         </div>
 
         <div class="social-auth-links text-center">
@@ -188,6 +189,7 @@ if (isset($_GET['login'])) {
 <script src="assets/js/jquery.min.js" type="text/javascript"></script>
 <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="assets/js/toastr/toastr.min.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap-markdown/js/bootstrap-markdown.min.js"></script>
 <script src="assets/js/lets-dev.min.js" type="text/javascript"></script>
 <script>
     $("#signin").submit(function () {
@@ -199,7 +201,7 @@ if (isset($_GET['login'])) {
             success: function (data) {
                 console.log(data);
                 if (data.status === "success") {
-                    window.location = "./manager?alert=loggedin";
+                    window.location = "./manager/index?alert=loggedin";
                 }
                 else {
                     var i;

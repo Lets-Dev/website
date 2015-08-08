@@ -9,7 +9,7 @@ switch ($_POST['action']) {
     // Créer une équipe
     case 'new':
         // On vérifie que le membre est bien un membre
-        if (!isMember(getInformation(), getCurrentYear())) {
+        if (!isMember(getInformation(), getCurrentYear()) && !checkPrivileges(getInformation())) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Vous devez être membre cotisant pour vous inscrire à une équipe.');
         }
@@ -48,8 +48,13 @@ switch ($_POST['action']) {
 
         if ($return['status'] == 'success') {
             $mysql_key = "default";
+
+            if (is_uploaded_file($_FILES['logo']['tmp_name'])) {
+                include('../libraries/SimpleImage.php');
+                $img = new abeautifulsite\SimpleImage($_FILES['logo']['tmp_name']);
+                $img->best_fit(500, 500)->save('../../assets/img/public/teams/' . $_POST['shortname'] . '.png');
+            }
             // TODO: Créer une base de données pour l'équipe
-            // TODO: Upload du logo dans /assets/img/teams/shortname.{jpg/png}
 
             // On crée l'équipe
             $query = $db->prepare('INSERT INTO teams (team_name, team_shortname, team_description, team_mysql_key, team_owner, team_status, team_creation)
@@ -73,6 +78,18 @@ switch ($_POST['action']) {
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Vous avez bien rejoint l\'équipe.');
+            $query->closeCursor();
+
+            // On ajoute l'équipe aux équipes de l'année
+            $query = $db->prepare("INSERT INTO team_points (point_team, point_nb, point_year)
+                                     VALUES (:team, 0, :year)");
+            $query->bindValue(':team', $db->lastInsertId('team_id'), PDO::PARAM_INT);
+            $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], 'Votre équipe est dans la liste des équipes de l\'année.');
+            $query->closeCursor();
+
+            slack($_POST['description'], true, "Une nouvelle équipe vient d'être créée.", $_POST['name']);
         }
         break;
 

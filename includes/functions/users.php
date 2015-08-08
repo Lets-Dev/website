@@ -1,5 +1,6 @@
 <?php
-function addUser($firstname, $lastname, $email, $phone=null, $password, $promotion=null, $facebook=null, $github=null, $google=null, $twitter=null) {
+function addUser($firstname, $lastname, $email, $phone = null, $password, $promotion = null, $facebook = null, $github = null, $google = null, $twitter = null)
+{
     global $db;
     $query = $db->prepare("INSERT INTO users (user_firstname, user_lastname, user_email, user_phone, user_password, user_promotion_year, user_signup, user_facebook_token, user_github_token, user_google_token, user_twitter_token)
                             VALUES (:user_firstname, :user_lastname, :user_email, :user_phone, :user_password, :user_promotion_year, :user_signup, :facebook, :github, :google, :twitter)");
@@ -18,9 +19,10 @@ function addUser($firstname, $lastname, $email, $phone=null, $password, $promoti
     return true;
 }
 
-function hasTeam($user) {
+function hasTeam($user)
+{
     global $db;
-    $query = $db -> prepare('select * from team_joins where join_user = :user and join_leave=0 and join_status = 1');
+    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_leave=0 AND join_status = 1');
     $query->bindValue(':user', $user, PDO::PARAM_INT);
     $query->execute();
     if ($query->rowCount() > 0)

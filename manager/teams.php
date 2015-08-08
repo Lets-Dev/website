@@ -37,6 +37,9 @@ if (isset($_GET['team'])) {
                                                   rows="1" style="resize: vertical"></textarea>
                                         <span class="fa fa-file-text form-control-feedback"></span>
                                     </div>
+                                    <div class="form-group">
+                                        <input type="file" name="logo" placeholder="logo"/>
+                                    </div>
                                     <button type="submit" class="btn btn-flat btn-ld btn-block">Créer l'équipe</button>
                                 </form>
                             </div>
@@ -47,10 +50,11 @@ if (isset($_GET['team'])) {
             <script>
                 $("#create_team").submit(function () {
                     $('.btn').attr('disabled', 'disabled');
+                    var formData = new FormData($(this)[0]);
                     $.ajax({
                         type: "POST",
                         url: "../includes/queries/teams.php",
-                        data: $("#create_team").serialize(),
+                        data: formData,
                         success: function (data) {
                             console.log(data);
                             if (data.status === "success") {
@@ -62,7 +66,10 @@ if (isset($_GET['team'])) {
                                     toastr["error"](data.messages[i])
                             }
                             $('.btn').removeAttr('disabled');
-                        }
+                        },
+                        cache: false,
+                        contentType: false,
+                        processData: false
                     });
                     return false;
                 });
@@ -90,7 +97,7 @@ if (isset($_GET['team'])) {
                             <h3 class="name"><a href="team/' . $data->team_shortname . '">' . $data->team_name . '</a></h3>';
                 $query2 = $db->prepare('SELECT * FROM team_joins
                                   LEFT JOIN users ON join_user=users.user_id
-                                  WHERE join_team=:team and join_status=1');
+                                  WHERE join_team=:team AND join_status=1');
                 $query2->bindValue(':team', $data->team_id, PDO::PARAM_INT);
                 $query2->execute();
                 $coef = $query2->rowCount() / $config['teams']['max_members'];
@@ -112,11 +119,14 @@ if (isset($_GET['team'])) {
                 while ($data2 = $query2->fetchObject())
                     echo $data2->user_firstname . " " . $data2->user_lastname . "<br />";
                 echo '"">' . $query2->rowCount() . ' ' . $member . '</span></div>
-                            <p class="description">' . $data->team_description . '</p>
+                            <p class="description">' . $data->team_description . '</p>';
+                    if(!hasTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
+                        echo '
                             <div class="team-footer">
-                                <button class="btn btn-flat btn-ld">Postuler</button>
-                            </div>
-                        </div>
+                                <button class="btn btn-flat btn-ld" onclick="joinTeam('.$data->team_id.')">Postuler</button>
+                            </div>';
+                    }
+                        echo '</div>
                     </div>
                 </div>';
             }

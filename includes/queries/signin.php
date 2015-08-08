@@ -8,13 +8,9 @@
  * @return array: Tableau contenant une colonne "status", et un tableau contenant les messages dans la colonne "messages"
  */
 
-session_start();
+include('../autoload.php');
 if (!isset($_SESSION['connected']))
     $_SESSION['connected'] = false;
-include('../credentials.php');
-include('../config.php');
-include('../functions/security.php');
-include('../functions/encoding.php');
 header('Content-Type: application/json; charset=utf-8');
 $return = array('status' => 'success', 'messages' => array());
 switch ($_POST['method']) {

@@ -197,3 +197,6 @@
   line-height: 34px;
   color: #777;
 }
+.content-wrapper .box {
+  margin-top: 10px;
+}

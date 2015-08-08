@@ -3,7 +3,17 @@ Options +FollowSymLinks -MultiViews
 RewriteEngine On
 RewriteBase /lets-dev
 
+
+# Manager Links
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(manager)/(team)/(create)$ $1/teams.php?$2=$3
 RewriteRule ^(manager)/(team)/([a-z0-9_-]+)$ $1/teams.php?$2=$3
+RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&step=$4&id=$5
+RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)$ $1/$2.php?action=$3&step=$4
+RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&id=$4
+RewriteRule ^(manager)/([a-z]+)/([a-z]+)$ $1/$2.php?action=$3
 RewriteRule ^(manager)/([^\.]+)$ $1/$2.php [NC,L]
+RewriteRule ^(manager)/([^\.]+)$ $1/$2.php [NC,L]
+
+# Main website links
+RewriteRule ^([^\.]+)$ $1.php [NC,L]

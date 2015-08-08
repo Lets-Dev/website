@@ -26,3 +26,13 @@ if (isset($_GET['alert'])) {
 }
 ?>
 <body class="login-page" id="wallpaper" onload="<?php echo $onload; ?>">
+
+<div style="position: fixed;bottom: 10px; right: 10px; color: #FEFEFE; text-shadow: 1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000" class="text-right">
+    <?php
+    foreach ($version as $versioning => $title) {
+        $html = '<b>' . $versioning . '</b><p>' . $title . '</p>';
+    }
+    echo $html;
+
+    ?>
+</div>

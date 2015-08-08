@@ -12,7 +12,8 @@ $config = array(
         ),
     'challenges' =>
         array(
-            'languages_per_challenge' => 2
+            'languages_per_challenge' => 2,
+            'points_per_challenge' => 1000
         ),
     'graphic' =>
         array(
