@@ -29,3 +29,15 @@ function hasTeam($user)
         return true;
     return false;
 }
+
+function hasApplied($user, $team)
+{
+    global $db;
+    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user and join_team=:team');
+    $query->bindValue(':user', $user, PDO::PARAM_INT);
+    $query->bindValue(':team', $team, PDO::PARAM_INT);
+    $query->execute();
+    if ($query->rowCount() > 0)
+        return true;
+    return false;
+}

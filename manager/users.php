@@ -33,7 +33,9 @@ switch ($_GET['action']) {
                                 $query->execute();
                                 while ($data = $query->fetchObject()) {
                                     echo '<tr>
-                                        <td class="name">' . $data->user_lastname . ' ' . $data->user_firstname . '</td>
+                                            <td class="name">
+                                                '.$data->user_lastname . ' ' . $data->user_firstname.'
+                                            </td>
                                         <td><a href="mailto:' . $data->user_email . '" target="_blank">' . $data->user_email . '</a></td>
                                         <td>';
                                     $query2 = $db->prepare("SELECT * FROM user_subscriptions
@@ -49,9 +51,12 @@ switch ($_GET['action']) {
                                     else
                                         echo "Jamais";
                                     echo '</td>
-                                        <td class="text-right">
-                                            <button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>
-                                        </td>
+                                        <td class="text-right">';
+                                    if ($data->user_honor == 0)
+                                            echo '<button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>';
+                                    else
+                                        echo '<i class="fa fa-star text-yellow"></i>';
+                                        echo '</td>
                                     </tr>';
                                 }
                                 ?>
@@ -83,16 +88,18 @@ switch ($_GET['action']) {
                         user_id: id
                     },
                     function (data) {
+                        console.log(data);
+                        data = JSON.parse(data);
                         var i;
                         if (data.status == "success") {
-                            button.closest('tr').remove();
-                            for (i = 0; i < data['messages'].length; i++)
-                                toastr["success"](data['messages'][i])
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["success"](data.messages[i])
                         }
                         else
-                            for (i = 0; i < data['messages'].length; i++)
-                                toastr["error"](data['messages'][i])
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["error"](data.messages[i])
                         $('.btn').removeAttr('disabled');
+                        button.remove();
                     })
             }
         </script>

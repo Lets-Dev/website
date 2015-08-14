@@ -58,10 +58,29 @@ function joinTeam(team) {
         var i;
         for (i = 0; i < data.messages.length; i++)
             toastr[data.status](data.messages[i]);
-        button.removeAttr("disabled")
+        if (data.status == "success") {
+            event.target.className = '';
+            button.addClass('btn btn-flat btn-success').html('<i class="fa fa-check"></i> Demande envoyée').attr('disabled', 'disabled')
+        }
     })
 
 }
+function readNotifications() {
+    $.post('../includes/queries/notifications', {
+        action: "mark_as_read"
+    }, function (data) {
+        $('#notification_count').remove()
+    })
+}
+
+function viewAllNotifications() {
+    $.post('../includes/queries/notifications', {
+        action: "view_all"
+    }, function (data) {
+        $('#notifications').html(data.display)
+    })
+}
+
 toastr.options = {
     "progressBar": true,
     "positionClass": "toast-bottom-right"

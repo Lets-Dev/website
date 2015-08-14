@@ -9,7 +9,8 @@ class Notifications
         $this->user = $user;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
 
     }
 
@@ -56,7 +57,7 @@ class Notifications
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->execute();
         while ($data = $query->fetchObject())
-            array_push($return['notifications'], $data->notification_text);
+            array_push($return['notifications'], array('text' => $data->notification_text, 'time' => $data->notification_time));
         return $return;
     }
 
@@ -70,7 +71,17 @@ class Notifications
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->execute();
         while ($data = $query->fetchObject())
-            array_push($return['notifications'], $data->notification_text);
+            array_push($return['notifications'], array('text' => $data->notification_text, 'time' => $data->notification_time));
         return $return;
+    }
+
+    // Marque les notifications comme lues
+    public function mark_as_read()
+    {
+        global $db;
+        $query = $db->prepare("UPDATE notifications SET notification_status = 1 WHERE notification_user=:user");
+        $query->bindValue(':user', $this->user, PDO::PARAM_INT);
+        $query->execute();
+        $query->closeCursor();
     }
 }

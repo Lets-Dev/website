@@ -91,9 +91,12 @@ if (isset($_GET['team'])) {
             while ($data = $query->fetchObject()) {
                 echo '
                 <div class="col-md-4">
-                    <div class="team-card text-center">
-                        <img src="../assets/img/public/teams/' . $data->team_shortname . '.png" class="logo">
-                        <div class="content">
+                    <div class="team-card text-center">';
+                    if (file_exists('../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png'))
+                        echo '<img src="../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png" class="logo"/>&nbsp;&nbsp;';
+                else
+                    echo '<img src="../assets/img/public/default_team.png" class="logo"/>&nbsp;&nbsp;';
+                        echo '<div class="content">
                             <h3 class="name"><a href="team/' . $data->team_shortname . '">' . $data->team_name . '</a></h3>';
                 $query2 = $db->prepare('SELECT * FROM team_joins
                                   LEFT JOIN users ON join_user=users.user_id
@@ -121,6 +124,7 @@ if (isset($_GET['team'])) {
                 echo '"">' . $query2->rowCount() . ' ' . $member . '</span></div>
                             <p class="description">' . $data->team_description . '</p>';
                     if(!hasTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
+                        if (!hasApplied(getInformation(), $data->team_id))
                         echo '
                             <div class="team-footer">
                                 <button class="btn btn-flat btn-ld" onclick="joinTeam('.$data->team_id.')">Postuler</button>
