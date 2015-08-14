@@ -49,12 +49,14 @@ switch ($_POST['action']) {
             $query->bindValue(':challenges', $_POST['challenges'], PDO::PARAM_INT);
             $query->execute();
             slack("Président: " . getInformation('firstname', $_POST['president']) . " " . getInformation('lastname', $_POST['president']) . "\n
-            Secrétaire: " . getInformation('firstname', $_POST['secretary']) . " " . getInformation('lastname', $_POST['secretary']) . "\n
-            Trésorier: " . getInformation('firstname', $_POST['treasurer']) . " " . getInformation('lastname', $_POST['treasurer']) . "\n
-            Communication: " . getInformation('firstname', $_POST['communication']) . " " . getInformation('lastname', $_POST['communication']) . "\n
-            Jurys: " . getInformation('firstname', $_POST['jurys']) . " " . getInformation('lastname', $_POST['jurys']) . "\n
-            Challenges: " . getInformation('firstname', $_POST['challenges']) . " " . getInformation('lastname', $_POST['challenges']) . "\n", true, getInformation('firstname') . " " . getInformation('lastname') . " vient d'ajouter le bureau de l'année scolaire " . (getCurrentYear() + 1) . "-" . (getCurrentYear() + 2), "Bureau " . (getCurrentYear() + 1) . "-" . (getCurrentYear() + 2));
+Secrétaire: " . getInformation('firstname', $_POST['secretary']) . " " . getInformation('lastname', $_POST['secretary']) . "\n
+Trésorier: " . getInformation('firstname', $_POST['treasurer']) . " " . getInformation('lastname', $_POST['treasurer']) . "\n
+Communication: " . getInformation('firstname', $_POST['communication']) . " " . getInformation('lastname', $_POST['communication']) . "\n
+Jurys: " . getInformation('firstname', $_POST['jurys']) . " " . getInformation('lastname', $_POST['jurys']) . "\n
+Challenges: " . getInformation('firstname', $_POST['challenges']) . " " . getInformation('lastname', $_POST['challenges']) . "\n", true, getInformation('firstname') . " " . getInformation('lastname') . " vient d'ajouter le bureau de l'année scolaire " . (getCurrentYear() + 1) . "-" . (getCurrentYear() + 2), "Bureau " . (getCurrentYear() + 1) . "-" . (getCurrentYear() + 2));
             array_push($return['messages'], "Le bureau a bien été ajouté.");
         }
         break;
 }
+
+echo json_encode(array_to_utf8($return));

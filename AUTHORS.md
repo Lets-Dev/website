@@ -1,9 +1,7 @@
 #Authors
 
-###Arba Yahya
-
 ###Canivez Martin
-- Twitter: @hype_fight
+- Twitter: <http://twitter.com/hype_fight>(@hype_fight)
 
 ###Gargouri Sofiane
 - Twitter: @SofianeGargouri

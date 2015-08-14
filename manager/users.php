@@ -33,7 +33,7 @@ switch ($_GET['action']) {
                                 $query->execute();
                                 while ($data = $query->fetchObject()) {
                                     echo '<tr>
-                                        <td>' . $data->user_lastname . ' ' . $data->user_firstname . '</td>
+                                        <td class="name">' . $data->user_lastname . ' ' . $data->user_firstname . '</td>
                                         <td><a href="mailto:' . $data->user_email . '" target="_blank">' . $data->user_email . '</a></td>
                                         <td>';
                                     $query2 = $db->prepare("SELECT * FROM user_subscriptions
@@ -49,7 +49,9 @@ switch ($_GET['action']) {
                                     else
                                         echo "Jamais";
                                     echo '</td>
-                                        <td></td>
+                                        <td class="text-right">
+                                            <button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>
+                                        </td>
                                     </tr>';
                                 }
                                 ?>
@@ -66,30 +68,30 @@ switch ($_GET['action']) {
 
         <script>
             $('.table').DataTable({
-                "paging": false,
+                "paging": true,
                 "lengthChange": false,
                 "searching": true,
                 "ordering": true,
                 "info": false,
                 "autoWidth": false
             });
-            function deleteLanguage(id) {
+            function honorMember(id) {
                 var button = $(event.target);
                 $('.btn').attr('disabled', 'disabled');
-                $.post('../includes/queries/languages.php', {
-                        action: "delete",
-                        id: id
+                $.post('../includes/queries/account.php', {
+                        action: "honor",
+                        user_id: id
                     },
                     function (data) {
                         var i;
                         if (data.status == "success") {
                             button.closest('tr').remove();
-                            for (i = 0; i < data.messages.length; i++)
-                                toastr["success"](data.messages[i])
+                            for (i = 0; i < data['messages'].length; i++)
+                                toastr["success"](data['messages'][i])
                         }
                         else
-                            for (i = 0; i < data.messages.length; i++)
-                                toastr["error"](data.messages[i])
+                            for (i = 0; i < data['messages'].length; i++)
+                                toastr["error"](data['messages'][i])
                         $('.btn').removeAttr('disabled');
                     })
             }
@@ -100,6 +102,58 @@ switch ($_GET['action']) {
         if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_secretary'))
             redirect("./users");
         switch ($_GET['step']) {
+            case "manage":
+                ?>
+                <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Gestion des bureaux')">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box">
+                                <div class="box-header">
+                                    <h3>
+                                        Gestion des bureaux
+                                        <a href="users/desks/add" class="btn btn-ld btn-flat pull-right">Ajouter un
+                                            bureau</a>
+                                    </h3>
+                                </div>
+                                <div class="box-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Année scolaire</th>
+                                            <th>Président</th>
+                                            <th>Secrétaire</th>
+                                            <th>Trésorier</th>
+                                            <th>Responsable communication</th>
+                                            <th>Responsable jurys</th>
+                                            <th>Responsable challenges</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $query = $db->prepare("SELECT * FROM desks
+                                                                 ORDER BY desk_year DESC");
+                                        $query->execute();
+                                        while ($data = $query->fetchObject()) {
+                                            echo "<tr>
+                                                <td>" . $data->desk_year . " - " . ($data->desk_year + 1) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_president) . " " . getInformation("lastname", $data->desk_president) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_secretary) . " " . getInformation("lastname", $data->desk_secretary) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_treasurer) . " " . getInformation("lastname", $data->desk_treasurer) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_communication) . " " . getInformation("lastname", $data->desk_communication) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_jurys) . " " . getInformation("lastname", $data->desk_jurys) . "</td>
+                                                <td>" . getInformation("firstname", $data->desk_challenges) . " " . getInformation("lastname", $data->desk_challenges) . "</td>
+                                            </tr>";
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                break;
             case "add":
                 $query = $db->prepare("SELECT count(*) AS nb FROM desks WHERE desk_year = :year");
                 $query->bindValue(":year", getCurrentYear() + 1, PDO::PARAM_INT);
@@ -114,7 +168,7 @@ switch ($_GET['action']) {
                             <div class="box" style="margin-top: 50px;">
                                 <div class="box-header">
                                     <h3>Ajouter le
-                                        bureau <?php echo (getCurrentYear() + 1) . " " . (getCurrentYear() + 2); ?></h3>
+                                        bureau <?php echo (getCurrentYear() + 1) . " - " . (getCurrentYear() + 2); ?></h3>
                                 </div>
                                 <div class="box-body">
                                     <form id="add_desk">
@@ -206,22 +260,35 @@ switch ($_GET['action']) {
                     </div>
                 </div>
                 <script src="../assets/js/select2/select2.min.js"></script>
-                <link rel="stylesheet" type="text/css" href="../assets/js/select2/select2.min.css" />
-                <link rel="stylesheet" type="text/css" href="../assets/css/AdminLTE.min.css" />
                 <script>
                     $('#president').select2({
                         placeholder: "Veuillez choisir un président..."
-                    })
-                    $("#add_language_set").submit(function () {
+                    });
+                    $('#secretary').select2({
+                        placeholder: "Veuillez choisir un secrétaire..."
+                    });
+                    $('#treasurer').select2({
+                        placeholder: "Veuillez choisir un trésorier..."
+                    });
+                    $('#communication').select2({
+                        placeholder: "Veuillez choisir un responsable communication..."
+                    });
+                    $('#jurys').select2({
+                        placeholder: "Veuillez choisir un responsable jurys..."
+                    });
+                    $('#challenges').select2({
+                        placeholder: "Veuillez choisir un responsable challenges..."
+                    });
+                    $("#add_desk").submit(function () {
                         $('.btn').attr('disabled', 'disabled');
                         $.ajax({
                             type: "POST",
-                            url: "../includes/queries/languages.php",
-                            data: $("#add_language_set").serialize(),
+                            url: "../includes/queries/users.php",
+                            data: $("#add_desk").serialize(),
                             success: function (data) {
                                 console.log(data);
                                 if (data.status === "success") {
-                                    window.location = "./languages/sets";
+                                    window.location = "./users/desks/manage";
                                 }
                                 else {
                                     var i;

@@ -11,6 +11,7 @@ include('../includes/version.php');
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="../assets/css/fontawesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/js/select2/select2.min.css" />
     <link rel="stylesheet" type="text/css" href="../assets/css/AdminLTE.min.css"/>
     <link rel="stylesheet" type="text/css" href="../assets/css/skins/skin-black.min.css"/>
     <link rel="stylesheet" type="text/css" href="../assets/js/toastr/toastr.min.css"/>

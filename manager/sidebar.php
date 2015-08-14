@@ -34,40 +34,73 @@
                     </li>
                 </ul>
             </li>
-            <li class="header">Gestion de l'association</li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-user"></i> <span>Utilisateurs</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="users/manage">Gérer les utilisateurs</a>
-                        <a href="users/desk">Gérer le bureau</a>
+            <?php
+            if (checkPrivileges(getInformation())) {
+                ?>
+                <li class="header">Gestion de l'association</li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-user"></i> <span>Utilisateurs</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="users/manage">Gérer les utilisateurs</a>
+                            <?php
+                            if (checkPrivileges(getInformation(), 'desk_president'))
+                                echo '<a href="users/desks/manage">Gérer le bureau</a>';
+                            ?>
+                        </li>
+                    </ul>
+                </li>
+            <?php
+            if (checkPrivileges(getInformation(), 'desk_challenges') || checkPrivileges(getInformation(), 'desk_president')) {
+                ?>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-bolt"></i> <span>Challenges</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="challenges/create">Créer un Challenge</a>
+                            <a href="challenges/manage">Gérer les Challenges</a>
+                        </li>
+                    </ul>
+                </li>
+                <?php
+            }
+                ?>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-code"></i> <span>Langages</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a href="languages/manage">Gérer les langages</a>
+                            <a href="languages/sets">Gérer les sets de langages</a>
+                        </li>
+                    </ul>
+                </li>
+                <?php
+                if (checkPrivileges(getInformation(), 'desk_treasurer') || checkPrivileges(getInformation(), 'desk_president')) {
+                    ?>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-money"></i> <span>Comptabilité</span> <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a href="treasury/<?php echo date("Y"); ?>/<?php echo url_slug(date("F")); ?>">Bilan mensuel</a>
+                                <a href="treasury/<?php echo date("Y"); ?>">Bilan annuel</a>
+                                <a href="treasury/add">Ajouter un déplacement d'argent</a>
+                            </li>
+                        </ul>
                     </li>
-                </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-bolt"></i> <span>Challenges</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="challenges/create">Créer un Challenge</a>
-                        <a href="challenges/manage">Gérer les Challenges</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-code"></i> <span>Langages</span> <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="languages/manage">Gérer les langages</a>
-                        <a href="languages/sets">Gérer les sets de langages</a>
-                    </li>
-                </ul>
-            </li>
+                    <?php
+                }
+                ?>
+                <?php
+            }
+            ?>
         </ul>
     </section>
     <!-- /.sidebar -->
