@@ -83,21 +83,23 @@ if (isset($_GET['team'])) {
     <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Parcourir les équipes')">
         <div class="row">
             <?php
-            $query = $db->prepare('SELECT * FROM team_points
-                              LEFT JOIN teams ON point_team=teams.team_id
-                              LEFT JOIN users ON team_owner=users.user_id
+            $query0 = $db->prepare('SELECT * FROM team_points
                               WHERE point_year = :year ORDER BY point_nb');
-            $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
-            $query->execute();
-            while ($data = $query->fetchObject()) {
+            $query0->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
+            $query0->execute();
+            while ($data0 = $query0->fetchObject()) {
+                $query = $db->prepare("SELECT * FROM teams WHERE team_id = :id");
+                $query->bindValue(":id", $data0->point_team, PDO::PARAM_INT);
+                $query->execute();
+                $data = $query->fetchObject();
                 echo '
                 <div class="col-md-4">
                     <div class="team-card text-center">';
-                    if (file_exists('../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png'))
-                        echo '<img src="../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png" class="logo"/>&nbsp;&nbsp;';
+                if (file_exists('../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png'))
+                    echo '<img src="../assets/img/public/teams/' . url_slug($data->team_shortname) . '.png" class="logo"/>&nbsp;&nbsp;';
                 else
                     echo '<img src="../assets/img/public/default_team.png" class="logo"/>&nbsp;&nbsp;';
-                        echo '<div class="content">
+                echo '<div class="content">
                             <h3 class="name"><a href="team/' . $data->team_shortname . '">' . $data->team_name . '</a></h3>';
                 $query2 = $db->prepare('SELECT * FROM team_joins
                                   LEFT JOIN users ON join_user=users.user_id
@@ -124,14 +126,14 @@ if (isset($_GET['team'])) {
                     echo $data2->user_firstname . " " . $data2->user_lastname . "<br />";
                 echo '"">' . $query2->rowCount() . ' ' . $member . '</span></div>
                             <p class="description">' . $data->team_description . '</p>';
-                    if(!hasTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
-                        if (!hasApplied(getInformation(), $data->team_id))
+                if (!hasTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
+                    if (!hasApplied(getInformation(), $data->team_id))
                         echo '
                             <div class="team-footer">
-                                <button class="btn btn-flat btn-ld" onclick="joinTeam('.$data->team_id.')">Postuler</button>
+                                <button class="btn btn-flat btn-ld" onclick="joinTeam(' . $data->team_id . ')">Postuler</button>
                             </div>';
-                    }
-                        echo '</div>
+                }
+                echo '</div>
                     </div>
                 </div>';
             }

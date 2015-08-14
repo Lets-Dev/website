@@ -460,7 +460,7 @@ include('sidebar.php');
                                            name="time" required>
                                 </div>
                                 <div class="form-group">
-                                    <input type="number" step="0.01" class="form-control" placeholder="Montant"
+                                    <input type="number" id="amount" step="0.01" class="form-control" placeholder="Montant"
                                            name="amount" required/>
                                 </div>
                                 <button type="submit" class="btn btn-flat btn-ld btn-block">Ajouter le déplacement
@@ -506,6 +506,7 @@ include('sidebar.php');
                     if ($(this).is(":checked")) {
                         $('#user_field').show();
                         $('#designation_field').hide();
+                        $('#amount').val(<?php echo $config['association']['subscription_price']; ?>)
                         return;
                     }
                     $('#user_field').hide();

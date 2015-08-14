@@ -1,5 +1,9 @@
 <?php
 $config = array(
+    'association' =>
+        array(
+            'subscription_price' => 5
+        ),
     'teams' =>
         array(
             'min_members' => 3,

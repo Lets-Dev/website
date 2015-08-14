@@ -68,13 +68,14 @@ switch ($_POST['action']) {
             $query->bindValue(':team_creation', time(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Votre équipe a bien été créée.');
+            $team_id = $db->lastInsertId('team_id');
             $query->closeCursor();
 
             // On fait rejoindre l'utilisateur à l'équipe
             $query = $db->prepare('INSERT INTO team_joins (join_user, join_team, join_time, join_leave, join_status)
                                 VALUES (:user, :team, :time, 0, 1)');
             $query->bindValue(':user', getInformation(), PDO::PARAM_INT);
-            $query->bindValue(':team', $db->lastInsertId('team_id'), PDO::PARAM_INT);
+            $query->bindValue(':team', $team_id, PDO::PARAM_INT);
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Vous avez bien rejoint l\'équipe.');
@@ -83,7 +84,7 @@ switch ($_POST['action']) {
             // On ajoute l'équipe aux équipes de l'année
             $query = $db->prepare("INSERT INTO team_points (point_team, point_nb, point_year)
                                      VALUES (:team, 0, :year)");
-            $query->bindValue(':team', $db->lastInsertId('team_id'), PDO::PARAM_INT);
+            $query->bindValue(':team', $team_id, PDO::PARAM_INT);
             $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Votre équipe est dans la liste des équipes de l\'année.');
