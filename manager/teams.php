@@ -38,6 +38,7 @@ if (isset($_GET['team'])) {
                                         <span class="fa fa-file-text form-control-feedback"></span>
                                     </div>
                                     <div class="form-group">
+                                        <label>Ajouter un logo</label>
                                         <input type="file" name="logo" placeholder="logo"/>
                                     </div>
                                     <button type="submit" class="btn btn-flat btn-ld btn-block">Créer l'équipe</button>
