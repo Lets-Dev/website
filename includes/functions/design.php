@@ -1,5 +1,6 @@
 <?php
-function gradient($hexstart, $hexend, $steps) {
+function gradient($hexstart, $hexend, $steps)
+{
 
     $start['r'] = hexdec(substr($hexstart, 0, 2));
     $start['g'] = hexdec(substr($hexstart, 2, 2));
@@ -15,7 +16,7 @@ function gradient($hexstart, $hexend, $steps) {
 
     $gradient = array();
 
-    for($i = 0; $i <= $steps; $i++) {
+    for ($i = 0; $i <= $steps; $i++) {
 
         $rgb['r'] = floor($start['r'] - ($step['r'] * $i));
         $rgb['g'] = floor($start['g'] - ($step['g'] * $i));
@@ -31,4 +32,15 @@ function gradient($hexstart, $hexend, $steps) {
 
     return $gradient;
 
+}
+
+function activeFile($file, $get = null, $value = null)
+{
+    if ($get != null) {
+        if (getCurrentFile() == $file && $_GET[$get] == $value)
+            echo "active";
+    }
+    else
+        if (getCurrentFile() == $file)
+            echo "active";
 }

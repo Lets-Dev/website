@@ -3,6 +3,146 @@ include('../includes/autoload.php');
 if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_treasurer'))
     header("Location: ./index");
 include('header.php');
+if (isset($_GET['action']) && $_GET['action'] == 'print') {
+    $first = mktime(0, 0, 0, date('m', strtotime($_GET['month'] . ' ' . $_GET['year'])), 1, $_GET['year']);
+    $last = mktime(0, 0, 0, date('m', strtotime($_GET['month'] . ' ' . $_GET['year'])) + 1, 1, $_GET['year']) - 1;
+    ?>
+    <body onload="window.print()" cz-shortcut-listen="true">
+    <div class="wrapper">
+      <!-- Main content -->
+      <section class="invoice">
+        <!-- title row -->
+        <div class="row">
+          <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <img src="../assets/img/public/banner.png" class="img-responsive">
+                    </div>
+                    <div class="col-xs-8">
+                        <h2 class="pull-right">
+                            <?php
+                                echo date_fr('F Y', false, strtotime($_GET['month'] . ' ' . $_GET['year']));
+                            ?>
+                        </h2>
+                    </div>
+                </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 table-responsive">
+            <h3>
+                Bilan des dépenses
+            </h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Désignation</th>
+                  <th class="text-right">Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                    $query = $db->prepare("SELECT * FROM treasury WHERE transaction_amount < 0 AND transaction_time BETWEEN :start AND :end ORDER BY transaction_time DESC");
+                    $query->bindValue(":start", $first, PDO::PARAM_INT);
+                    $query->bindValue(":end", $last, PDO::PARAM_INT);
+                    $query->execute();
+                    while ($data = $query->fetchObject()) {
+                        echo "<tr>
+                            <td>" . date_fr("d F Y", false, $data->transaction_time) . "</td>
+                            <td>" . $data->transaction_designation . "</td>
+                            <td class='text-right'>" . $data->transaction_amount . " €</td>
+                        </tr>";
+                    }
+                    $query->closeCursor();
+ ?>
+              </tbody>
+            </table>
+            <h3>
+                Bilan des recettes
+            </h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Désignation</th>
+                  <th class="text-right">Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+              <?php
+                    $query = $db->prepare("SELECT * FROM treasury WHERE transaction_amount > 0 AND transaction_time BETWEEN :start AND :end ORDER BY transaction_time DESC");
+                    $query->bindValue(":start", $first, PDO::PARAM_INT);
+                    $query->bindValue(":end", $last, PDO::PARAM_INT);
+                    $query->execute();
+                    while ($data = $query->fetchObject()) {
+                        echo "<tr>
+                            <td>" . date_fr("d F Y", false, $data->transaction_time) . "</td>
+                            <td>" . $data->transaction_designation . "</td>
+                            <td class='text-right'>" . $data->transaction_amount . " €</td>
+                        </tr>";
+                    }
+                    $query->closeCursor();
+ ?>
+              </tbody>
+            </table>
+            <?php
+            $query = $db->prepare("SELECT sum(transaction_amount) AS total,
+                                  sum(CASE WHEN transaction_amount < 0 THEN transaction_amount ELSE 0 END) AS depenses,
+                                  sum(CASE WHEN transaction_amount >= 0 THEN transaction_amount ELSE 0 END) AS recettes
+                                  FROM treasury WHERE transaction_time BETWEEN :start AND :end");
+            $query->bindValue(":start", $first, PDO::PARAM_INT);
+            $query->bindValue(":end", $last, PDO::PARAM_INT);
+            $query->execute();
+            $data = $query->fetchObject();
+            $total = number_format($data->total,2, ",", " ");
+            $depenses = number_format($data->depenses,2, ",", " ");
+            $recettes = number_format($data->recettes,2, ",", " ");
+            $query->closeCursor();
+ ?>
+            <h3>Bilan total</h3>
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="box text-center" style="box-shadow: 1px 1px 1px rgba(0,0,0,0.1), -1px -1px 1px rgba(0,0,0,0.1);">
+                        <div class="box-header" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <h4>Dépenses</h4>
+                        </div>
+                        <div class="box-body">
+                            <?php echo $depenses; ?> €
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="box text-center" style="box-shadow: 1px 1px 1px rgba(0,0,0,0.1), -1px -1px 1px rgba(0,0,0,0.1);">
+                        <div class="box-header" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <h4>Recettes</h4>
+                        </div>
+                        <div class="box-body">
+                            <?php echo $recettes; ?> €
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="box text-center" style="box-shadow: 1px 1px 1px rgba(0,0,0,0.1), -1px -1px 1px rgba(0,0,0,0.1);">
+                        <div class="box-header" style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <h4>Total</h4>
+                        </div>
+                        <div class="box-body">
+                            <?php echo $total; ?> €
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+
+      </section><!-- /.content -->
+    </div><!-- ./wrapper -->
+
+</body>
+    <?php
+    return;
+}
 include('navbar.php');
 include('sidebar.php');
 
@@ -102,7 +242,10 @@ include('sidebar.php');
                     </div>
                     <div class="box">
                         <div class="box-header">
-                            <h3>Liste des déplacements d'argent</h3>
+                            <h3>
+                                Liste des déplacements d'argent
+                                <a href="./treasury/<?php echo $_GET['year'].'/'.$_GET['month']; ?>/print" class="btn btn-ld btn-flat pull-right"><i class="fa fa-print"></i> Imprimer</a>
+                            </h3>
                         </div>
                         <div class="box-body">
                             <div class="table-responsive">

@@ -1,7 +1,6 @@
 <?php
 if (!checkSession())
     header('Location: ' . $url . 'signin');
-include('../includes/version.php');
 ?>
 <!Doctype HTML>
 <html>
@@ -19,24 +18,4 @@ include('../includes/version.php');
     <link rel="icon" href="../assets/img/public/logo.png"/>
     <title>Let's Dev !</title>
     <script src="../assets/js/jquery.min.js"></script>
-</head><?php
-$onload = "getWallpaper('manager');";
-if (isset($_GET['alert'])) {
-    switch ($_GET['alert']) {
-        case 'loggedin':
-            $onload .= "toastr['success']('Vous êtes bien connecté.')";
-            break;
-    }
-}
-?>
-<body class="skin-black fixed" onload="<?php echo $onload; ?>">
-<div class="wrapper" id="wallpaper">
-    <div style="position: fixed;bottom: 10px; right: 10px; color: #FEFEFE; text-shadow: 1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000" class="text-right">
-        <?php
-        foreach ($version as $versioning => $title) {
-            $html = '<b>' . $versioning . '</b><p>' . $title . '</p>';
-        }
-        echo $html;
-
-        ?>
-    </div>
+</head>

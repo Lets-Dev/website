@@ -205,4 +205,9 @@ function ArrayHasDuplicates($array){
     }
     return false;
 }
-?>
+
+function getCurrentFile() {
+    $file = $_SERVER["SCRIPT_NAME"];
+    $path_details=pathinfo($file);
+    return $path_details['basename'];
+}

@@ -11,6 +11,7 @@ RewriteRule ^(manager)/(team)/([a-z0-9_-]+)$ $1/teams.php?$2=$3
 RewriteRule ^(manager)/(treasury)/([a-z]+)$ $1/$2.php?month=$3
 RewriteRule ^(manager)/(treasury)/([0-9]+)$ $1/$2.php?year=$3
 RewriteRule ^(manager)/(treasury)/([0-9]+)/([a-z]+)$ $1/$2.php?year=$3&month=$4
+RewriteRule ^(manager)/(treasury)/([0-9]+)/([a-z]+)/(print)$ $1/$2.php?year=$3&month=$4&action=$5
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&step=$4&id=$5
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)$ $1/$2.php?action=$3&step=$4
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&id=$4
