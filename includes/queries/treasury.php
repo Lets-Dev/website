@@ -11,7 +11,7 @@ switch ($_POST['action']) {
             array_push($return['messages'], "Vous n'avez pas la permission de faire ceci.");
         }
 
-        if (!isset($_POST['time']) || (!isset($_POST['designation']) && !isset($_POST['cotisation'])) || !isset($_POST['amount'])) {
+        if (empty($_POST['time']) || (empty($_POST['designation']) && empty($_POST['cotisation'])) || empty($_POST['amount'])) {
             $return['status'] = 'error';
             array_push($return['messages'], "Veuillez saisir l'intégralité des champs.");
         }

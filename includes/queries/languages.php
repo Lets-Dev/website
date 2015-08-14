@@ -15,7 +15,7 @@ switch ($_POST['action']) {
         }
 
         // On vérifie que les champs ont bien été remplis
-        if (!isset($_POST['name']) || !isset($_POST['documentation'])) {
+        if (empty($_POST['name']) || empty($_POST['documentation'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
@@ -54,7 +54,7 @@ switch ($_POST['action']) {
         }
 
         // On vérifie que les champs ont bien été remplis
-        if (!isset($_POST['name']) || !isset($_POST['documentation'])) {
+        if (empty($_POST['name']) || empty($_POST['documentation'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
@@ -130,7 +130,7 @@ switch ($_POST['action']) {
                 }
 
                 // On vérifie que les champs ont bien été remplis
-                if (!isset($_POST['name']) || !isset($_POST['language'])) {
+                if (empty($_POST['name']) || empty($_POST['language'])) {
                     $return['status'] = 'error';
                     array_push($return['messages'], 'Veuillez saisir tous les champs.');
                 }
@@ -178,7 +178,7 @@ switch ($_POST['action']) {
                 }
 
                 // On vérifie que les champs ont bien été remplis
-                if (!isset($_POST['name']) || !isset($_POST['language'])) {
+                if (empty($_POST['name']) || empty($_POST['language'])) {
                     $return['status'] = 'error';
                     array_push($return['messages'], 'Veuillez saisir tous les champs.');
                 }

@@ -25,7 +25,7 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         // On vérifie que les champs ont bien été remplis
-        if (!isset($_POST['name']) || !isset($_POST['shortname']) || !isset($_POST['description'])) {
+        if (empty($_POST['name']) || empty($_POST['shortname']) || empty($_POST['description'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
@@ -127,7 +127,7 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         // On vérifie que les champs ont bien été remplis
-        if (!isset($_POST['name']) || !isset($_POST['shortname']) || !isset($_POST['description'])) {
+        if (empty($_POST['name']) || empty($_POST['shortname']) || empty($_POST['description'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }

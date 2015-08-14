@@ -14,9 +14,9 @@ $return = array('status' => 'success', 'messages' => array());
 
 
 // Set default values
-if (!isset($_POST['promotion']))
+if (empty($_POST['promotion']))
     $_POST['promotion'] = null;
-if (!isset($_POST['phone']))
+if (empty($_POST['phone']))
     $_POST['phone'] = null;
 
 // Check if all fields are filled

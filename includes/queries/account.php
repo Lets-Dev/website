@@ -26,7 +26,7 @@ switch ($_POST['action']) {
         $query->bindValue(':password', encode($_POST['current']), PDO::PARAM_STR);
         $query->execute();
         // On vérifie que le formulaire est rempli
-        if (!isset($_POST['current']) || !isset($_POST['new']) || !isset($_POST['confirm'])) {
+        if (empty($_POST['current']) || empty($_POST['new']) || empty($_POST['confirm'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
