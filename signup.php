@@ -30,7 +30,6 @@ $helper = $fb->getRedirectLoginHelper();
 
 $permissions = ['email']; // Optional permissions
 
-// TODO: change callback URL
 $fb_loginUrl = $helper->getLoginUrl($url.'signup?register=facebook', $permissions);
 
 if (isset($_GET['register']))

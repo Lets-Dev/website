@@ -33,11 +33,32 @@ function hasTeam($user)
 function hasApplied($user, $team)
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user and join_team=:team');
+    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_team=:team');
     $query->bindValue(':user', $user, PDO::PARAM_INT);
     $query->bindValue(':team', $team, PDO::PARAM_INT);
     $query->execute();
     if ($query->rowCount() > 0)
         return true;
+    return false;
+}
+
+function isTeamOwner($user)
+{
+    global $db;
+    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_leave=0 AND join_status = 1');
+    $query->bindValue(':user', $user, PDO::PARAM_INT);
+    $query->execute();
+    if ($query->rowCount() > 0) {
+        $data = $query->fetchObject();
+        $team = $data->join_team;
+        $query->closeCursor();
+
+        $query = $db->prepare("SELECT * FROM teams WHERE team_creation=:user AND team_id = :team");
+        $query->bindValue(":user", $user, PDO::PARAM_INT);
+        $query->bindValue(":team", $team, PDO::PARAM_INT);
+        $query->execute();
+        if ($query -> rowCount()>0)
+            return true;
+    }
     return false;
 }

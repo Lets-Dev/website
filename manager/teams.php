@@ -77,6 +77,9 @@ if (isset($_GET['team'])) {
             </script>
             <?php
             break;
+        case 'myteam':
+
+            break;
     }
 } else {
     ?>

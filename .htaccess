@@ -16,6 +16,7 @@ RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([a-z]+)$ $1/$2.php?action=$3&step=$4
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)/([0-9]+)$ $1/$2.php?action=$3&id=$4
 RewriteRule ^(manager)/([a-z]+)/([a-z]+)$ $1/$2.php?action=$3
+RewriteRule ^(manager)/$ $1/index.php [NC,L]
 RewriteRule ^(manager)/([^\.]+)$ $1/$2.php [NC,L]
 RewriteRule ^(manager)/([^\.]+)$ $1/$2.php [NC,L]
 

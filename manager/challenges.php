@@ -209,19 +209,19 @@ switch ($_GET['action']) {
                     </h3>
                     <div class="row">
                     <div class="col-md-4 text-center">
-                        <span class="label label-success"><?php echo date_fr("j M Y", $data->challenge_start); ?></span>
+                        <span class="label label-success"><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
                     </div>
                         <div class="col-md-4 text-center">
                         <?php
                         if ($data->challenge_subjects < time())
-                            echo '<span class="label label-success">'.date_fr("j M Y", $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-success">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         else
-                            echo '<span class="label label-warning">'.date_fr("j M Y", $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-warning">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         ?>
                         </div>
                         <div class="col-md-4 text-center">
                         <?php
-                            echo '<span class="label label-danger">'.date_fr("j M Y", $data->challenge_end).'</span>';
+                            echo '<span class="label label-danger">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
                         ?>
                         </div>
                     </div>
@@ -259,10 +259,147 @@ switch ($_GET['action']) {
                     ?>
                     </div>
                     <h4 class="text-center">Jury du challenge</h4>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury1)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_jury1).'<br />'.getInformation('lastname', $data->challenge_jury1) ?>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_ergonomy_jury)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Ergonomie" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_ergonomy_jury).'<br />'.getInformation('lastname', $data->challenge_ergonomy_jury) ?>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury2)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_jury2).'<br />'.getInformation('lastname', $data->challenge_jury2) ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+                <?php
+                if (!$row)
+                    echo '</div>';
+                $row = !$row;
+                array_push($loop, array_shift($loop));
+        }
+        break;
+        case "all":
+        ?>
+
+            <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Challenges en cours')">
+        <?php
+        $query = $db->prepare("SELECT * FROM challenges
+                                     LEFT JOIN language_sets ON set_id = challenge_language
+                                     WHERE challenge_end < :time
+                                     ORDER BY challenge_start DESC");
+         $query->bindValue(':time',time(), PDO::PARAM_INT);
+        $query->execute();
+        $row = true;
+        $loop = array();
+        for ($i = $config['challenges']['languages_per_challenge']-1; $i >= 0; $i--) {
+            array_push($loop, $i);
+        }
+        while ($data = $query->fetchObject()) {
+            if ($row)
+                echo '<div class="row">
+                        <div class="col-md-offset-1 col-md-4">';
+            else
+                echo '<div class="col-md-offset-2 col-md-4">';
+            ?>
+            <div class="box" style="margin-top: 50px;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="progress progress-xxs" style="margin-bottom: 0">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="background-color:#dd4b39;width: 100%">
+                                    <span class="sr-only">100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="box-header">
+                    <h3>
+                        Challenge #<?php
+                            echo ($data->challenge_id/$config['challenges']['languages_per_challenge'] + $loop[0]*(1/$config['challenges']['languages_per_challenge']))." - ".$data->set_name;
+                        ?>
+                    </h3>
+                    <div class="row">
+                    <div class="col-md-4 text-center">
+                        <span class="label label-success"><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
+                    </div>
+                        <div class="col-md-4 text-center">
+                        <?php
+                        if ($data->challenge_subjects < time())
+                            echo '<span class="label label-success">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                        else
+                            echo '<span class="label label-warning">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                        ?>
+                        </div>
+                        <div class="col-md-4 text-center">
+                        <?php
+                            echo '<span class="label label-danger">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
+                        ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-body">
+                <?php
+                    if ($data->challenge_subjects <= time()) {
+                        $subject = new Parsedown();
+                        echo "<h4 class='text-center'>Sujet</h4>";
+                        echo $subject->text($data->challenge_subject);
+
+                    }
+                ?>
+                    <h4 class="text-center">Langages</h4>
                     <div class="text-center">
-                        <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury1)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement">&nbsp;&nbsp;
-                        <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_ergonomy_jury)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Ergonomie">&nbsp;&nbsp;
-                        <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury2)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement">
+                    <?php
+                        $query2 = $db->prepare('SELECT * FROM language_set_association
+                                                LEFT JOIN languages ON language_id=association_language
+                                                WHERE  association_set = :set
+                                                ORDER BY language_name');
+                        $query2->bindValue(':set', $data->set_id);
+                        $query2->execute();
+                        $i = false;
+                        while ($data2 = $query2->fetchObject()) {
+                            echo '<a href="' . $data2->language_documentation . '" target="_blank">';
+                            if (file_exists('../assets/img/private/languages/' . url_slug($data2->language_name) . '.png'))
+                                echo '<img src="../assets/img/private/languages/' . url_slug($data2->language_name) . '.png" height="50px" data-toggle="tooltip" title="' . $data2->language_name . '"/>';
+                            else {
+                                echo $data2->language_name;
+                            }
+                            $i = true;
+                            echo '&nbsp;&nbsp;</a>';
+                        }
+                        $query2->closeCursor();
+                    ?>
+                    </div>
+                    <h4 class="text-center">Jury du challenge</h4>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury1)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_jury1).'<br />'.getInformation('lastname', $data->challenge_jury1) ?>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_ergonomy_jury)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Ergonomie" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_ergonomy_jury).'<br />'.getInformation('lastname', $data->challenge_ergonomy_jury) ?>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <img src="http://gravatar.com/avatar/<?php echo md5(getInformation('email', $data->challenge_jury2)) ?>?s=50&d=<?php echo urlencode($config['users']['default_avatar'])?>" class="img-circle" data-toggle="tooltip" title="Jury Développement" height="50px">
+                            <p>
+                                <?php echo getInformation('firstname', $data->challenge_jury2).'<br />'.getInformation('lastname', $data->challenge_jury2) ?>
+                            </p>
+                        </div>
                     </div>
                     <div class="box-footer text-center">
                         <button class="btn btn-flat btn-ld">S'inscrire</button>

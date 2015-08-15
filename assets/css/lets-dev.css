@@ -152,6 +152,7 @@
 }
 .team-card {
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 .team-card > .logo {
   width: 100px;

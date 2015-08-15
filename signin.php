@@ -15,7 +15,6 @@ $helper = $fb->getRedirectLoginHelper();
 
 $permissions = ['email']; // Optional permissions
 
-// TODO: change callback URL
 $fb_loginUrl = $helper->getLoginUrl($url.'signin?login=facebook', $permissions);
 
 if (isset($_GET['login'])) {
