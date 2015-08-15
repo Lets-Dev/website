@@ -209,19 +209,19 @@ switch ($_GET['action']) {
                     </h3>
                     <div class="row">
                     <div class="col-md-4 text-center">
-                        <span class="label label-success"><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
+                        <span class="label label-success" data-toggle="tooltip" title="Découverte du set de langages" ><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
                     </div>
                         <div class="col-md-4 text-center">
                         <?php
                         if ($data->challenge_subjects < time())
-                            echo '<span class="label label-success">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-success" data-toggle="tooltip" title="Découverte du sujet" >'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         else
-                            echo '<span class="label label-warning">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-warning" data-toggle="tooltip" title="Découverte du sujet">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         ?>
                         </div>
                         <div class="col-md-4 text-center">
                         <?php
-                            echo '<span class="label label-danger">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
+                            echo '<span class="label label-danger" data-toggle="tooltip" title="Date limite de retour des projets pour évaluation">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
                         ?>
                         </div>
                     </div>
@@ -331,19 +331,19 @@ switch ($_GET['action']) {
                     </h3>
                     <div class="row">
                     <div class="col-md-4 text-center">
-                        <span class="label label-success"><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
+                        <span class="label label-success" data-toggle="tooltip" title="Découverte du set de langages"><?php echo date_fr("j M Y", false, $data->challenge_start); ?></span>
                     </div>
                         <div class="col-md-4 text-center">
                         <?php
                         if ($data->challenge_subjects < time())
-                            echo '<span class="label label-success">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-success" data-toggle="tooltip" title="Découverte du sujet" >'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         else
-                            echo '<span class="label label-warning">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
+                            echo '<span class="label label-warning" data-toggle="tooltip" title="Découverte du sujet">'.date_fr("j M Y", false, $data->challenge_subjects).'</span>';
                         ?>
                         </div>
                         <div class="col-md-4 text-center">
                         <?php
-                            echo '<span class="label label-danger">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
+                            echo '<span class="label label-danger" data-toggle="tooltip" title="Date limite de retour des projets pour évaluation">'.date_fr("j M Y", false, $data->challenge_end).'</span>';
                         ?>
                         </div>
                     </div>
