@@ -23,16 +23,10 @@ if (isset($_GET['alert'])) {
         ?>
     </div>
     <header class="main-header">
-        <!-- Logo -->
-        <a href="./index" class="logo">
-            <!-- mini logo for sidebar mini 50x50 pixels -->
-            <span class="logo-mini"><img src="../assets/img/public/logo.png" class="img-responsive"></span>
-            <!-- logo for regular state and mobile devices -->
+        <a href="./index" class="logo hidden-xs">
             <span class="logo-lg"><img src="../assets/img/public/banner_borderless.png" class="img-responsive"></span>
         </a>
-        <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top" role="navigation">
-            <!-- Sidebar toggle button-->
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                 <span class="sr-only">Toggle navigation</span>
             </a>
@@ -115,10 +109,6 @@ if (isset($_GET['alert'])) {
                                 </div>
                             </li>
                         </ul>
-                    </li>
-                    <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                     </li>
                 </ul>
             </div>
