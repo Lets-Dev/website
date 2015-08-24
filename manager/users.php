@@ -53,10 +53,10 @@ switch ($_GET['action']) {
                                     echo '</td>
                                         <td class="text-right">';
                                     if ($data->user_honor == 0)
-                                            echo '<button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>';
+                                        echo '<button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>';
                                     else
                                         echo '<i class="fa fa-star text-yellow"></i>';
-                                        echo '</td>
+                                    echo '</td>
                                     </tr>';
                                 }
                                 ?>
@@ -133,6 +133,7 @@ switch ($_GET['action']) {
                                             <th>Responsable communication</th>
                                             <th>Responsable jurys</th>
                                             <th>Responsable challenges</th>
+                                            <th></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -149,6 +150,10 @@ switch ($_GET['action']) {
                                                 <td>" . getInformation("firstname", $data->desk_communication) . " " . getInformation("lastname", $data->desk_communication) . "</td>
                                                 <td>" . getInformation("firstname", $data->desk_jurys) . " " . getInformation("lastname", $data->desk_jurys) . "</td>
                                                 <td>" . getInformation("firstname", $data->desk_challenges) . " " . getInformation("lastname", $data->desk_challenges) . "</td>
+                                                <th>";
+                                            if ($data->desk_year >= getCurrentYear())
+                                                echo "<a href='./users/desks/edit/" . $data->desk_year . "' class='btn btn-xs btn-flat btn-warning'>Modifier</a>";
+                                            echo "</th>
                                             </tr>";
                                         }
                                         ?>
@@ -292,6 +297,174 @@ switch ($_GET['action']) {
                             type: "POST",
                             url: "../includes/queries/users.php",
                             data: $("#add_desk").serialize(),
+                            success: function (data) {
+                                console.log(data);
+                                if (data.status === "success") {
+                                    window.location = "./users/desks/manage";
+                                }
+                                else {
+                                    var i;
+                                    for (i = 0; i < data.messages.length; i++)
+                                        toastr["error"](data.messages[i])
+                                }
+                                $('.btn').removeAttr('disabled');
+                            }
+                        });
+                        return false;
+                    });
+                </script>
+                <?php
+                break;
+            case "edit":
+                $query0 = $db->prepare("SELECT * FROM desks WHERE desk_year = :year");
+                $query0->bindValue(":year", $_GET['id'], PDO::PARAM_INT);
+                $query0->execute();
+                $data0 = $query0->fetchObject();
+                if ($data0->desk_year < getCurrentYear())
+                    redirect("./users/desks/manage");
+                ?>
+                <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Modifier un bureau')">
+                    <div class="row">
+                        <div class="col-md-4 col-md-offset-4">
+                            <div class="box" style="margin-top: 50px;">
+                                <div class="box-header">
+                                    <h3>Modifier le
+                                        bureau <?php echo $data0->desk_year . " - " . ($data0->desk_year + 1); ?></h3>
+                                </div>
+                                <div class="box-body">
+                                    <form id="edit_desk">
+                                        <input type="hidden" name="action" value="edit_desk"/>
+                                        <input type="hidden" name="desk" value="<?php echo $_GET['id'] ?>"/>
+
+                                        <div class="form-group">
+                                            <select name="president" id="president" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_president == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select name="secretary" id="secretary" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_secretary == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select name="treasurer" id="treasurer" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_treasurer == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select name="communication" id="communication" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_communication == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select name="jurys" id="jurys" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_jurys == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <select name="challenges" id="challenges" class="form-control">
+                                                <option></option>
+                                                <?php
+                                                $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname, user_firstname');
+                                                $query->execute();
+                                                while ($data = $query->fetchObject()) {
+                                                    if ($data0->desk_challenges == $data->user_id)
+                                                        echo '<option value="' . $data->user_id . '" selected="selected">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                    else
+                                                        echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-flat btn-ld btn-block">Modifier le bureau
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script src="../assets/js/select2/select2.min.js"></script>
+                <script>
+                    $('#president').select2({
+                        placeholder: "Veuillez choisir un président..."
+                    });
+                    $('#secretary').select2({
+                        placeholder: "Veuillez choisir un secrétaire..."
+                    });
+                    $('#treasurer').select2({
+                        placeholder: "Veuillez choisir un trésorier..."
+                    });
+                    $('#communication').select2({
+                        placeholder: "Veuillez choisir un responsable communication..."
+                    });
+                    $('#jurys').select2({
+                        placeholder: "Veuillez choisir un responsable jurys..."
+                    });
+                    $('#challenges').select2({
+                        placeholder: "Veuillez choisir un responsable challenges..."
+                    });
+                    $("#edit_desk").submit(function () {
+                        $('.btn').attr('disabled', 'disabled');
+                        $.ajax({
+                            type: "POST",
+                            url: "../includes/queries/users.php",
+                            data: $("#edit_desk").serialize(),
                             success: function (data) {
                                 console.log(data);
                                 if (data.status === "success") {

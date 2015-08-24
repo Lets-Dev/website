@@ -15,7 +15,7 @@ switch ($_POST['action']) {
         }
 
         // On vérifie que l'utilisateur n'est pas déjà inscrit dans une équipe
-        $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :id AND join_status = 1');
+        $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :id AND subscription_status = 1');
         $query->bindValue(':id', getInformation(), PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() > $config['users']['max_teams'] - 1) {
@@ -72,22 +72,13 @@ switch ($_POST['action']) {
             $query->closeCursor();
 
             // On fait rejoindre l'utilisateur à l'équipe
-            $query = $db->prepare('INSERT INTO team_joins (join_user, join_team, join_time, join_leave, join_status)
+            $query = $db->prepare('INSERT INTO team_subscriptions (subscription_user, subscription_team, subscription_time, subscription_leave, subscription_status)
                                 VALUES (:user, :team, :time, 0, 1)');
             $query->bindValue(':user', getInformation(), PDO::PARAM_INT);
             $query->bindValue(':team', $team_id, PDO::PARAM_INT);
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Vous avez bien rejoint l\'équipe.');
-            $query->closeCursor();
-
-            // On ajoute l'équipe aux équipes de l'année
-            $query = $db->prepare("INSERT INTO team_points (point_team, point_nb, point_year)
-                                     VALUES (:team, 0, :year)");
-            $query->bindValue(':team', $team_id, PDO::PARAM_INT);
-            $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
-            $query->execute();
-            array_push($return['messages'], 'Votre équipe est dans la liste des équipes de l\'année.');
             $query->closeCursor();
 
             slack($_POST['description'], true, "Une nouvelle équipe vient d'être créée.", $_POST['name']);
@@ -190,7 +181,7 @@ switch ($_POST['action']) {
         }
 
         // On vérifie que l'utilisateur n'est pas déjà inscrit dans une équipe
-        $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :id AND join_status = 1');
+        $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :id AND subscription_status = 1');
         $query->bindValue(':id', getInformation(), PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() > $config['users']['max_teams'] - 1) {
@@ -200,7 +191,7 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         // On vérifie que l'équipe n'est pas complète
-        $query = $db->prepare('SELECT * FROM team_joins WHERE join_team = :team AND join_status = 1');
+        $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_team = :team AND subscription_status = 1');
         $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() >= $config['teams']['max_members']) {
@@ -211,7 +202,7 @@ switch ($_POST['action']) {
 
         // Si tout est ok
         if ($return['status'] == 'success') {
-            $query = $db->prepare('INSERT INTO team_joins (join_user, join_team, join_time, join_leave, join_status)
+            $query = $db->prepare('INSERT INTO team_subscriptions (subscription_user, subscription_team, subscription_time, subscription_leave, subscription_status)
                               VALUES (:user, :team, :time, 0, 0)');
             $query->bindValue(':user', getInformation(), PDO::PARAM_INT);
             $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
@@ -251,7 +242,7 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         if ($return['status'] == 'success' && $status == 1) {
-            $query = $db->prepare('UPDATE team_joins SET join_status=:status, join_time = :time WHERE join_team=:team AND join_user=:user');
+            $query = $db->prepare('UPDATE team_subscriptions SET subscription_status=:status, subscription_time = :time WHERE subscription_team=:team AND subscription_user=:user');
             $query->bindValue(':status', $status, PDO::PARAM_INT);
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
@@ -284,7 +275,7 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         if ($return['status'] == 'success') {
-            $query = $db->prepare('UPDATE team_joins SET join_status=:status, join_leave = :time WHERE join_team=:team AND join_user=:user');
+            $query = $db->prepare('UPDATE team_subscriptions SET subscription_status=:status, subscription_leave = :time WHERE subscription_team=:team AND subscription_user=:user');
             $query->bindValue(':status', 3, PDO::PARAM_INT);
             $query->bindValue(':time', time(), PDO::PARAM_INT);
             $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);

@@ -14,7 +14,7 @@
                 <ul class="treeview-menu">
                     <li>
                         <?php
-                        if (hasTeam(getInformation()))
+                        if (getUserTeam(getInformation()))
                             echo '<a href="team/myteam">Mon Équipe</a>';
                         else
                             echo '<a href="team/create">Créer une Équipe</a>';

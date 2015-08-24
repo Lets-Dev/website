@@ -65,11 +65,11 @@ CREATE TABLE `challenge_votes` (
 );
 
 CREATE TABLE `challenge_jury_votes` (
-  `challenge_id` INT NOT NULL AUTO_INCREMENT,
-  `challenge_first` INT NOT NULL,
-  `challenge_second` INT NOT NULL,
-  `challenge_third` INT NOT NULL,
-  PRIMARY KEY (`challenge_id`)
+  `jury_vote_id` INT NOT NULL AUTO_INCREMENT,
+  `jury_vote_team` INT NOT NULL,
+  `jury_vote_points` INT NOT NULL,
+  `jury_vote_challenge` INT NOT NULL,
+  PRIMARY KEY (`jury_vote_id`)
 );
 
 CREATE TABLE `user_subscriptions` (
@@ -79,14 +79,14 @@ CREATE TABLE `user_subscriptions` (
   PRIMARY KEY (`subscription_id`)
 );
 
-CREATE TABLE `team_joins` (
-  `join_id` INT NOT NULL AUTO_INCREMENT,
-  `join_user` INT NOT NULL,
-  `join_team` INT NOT NULL,
-  `join_time` INT(10) NOT NULL,
-  `join_leave` INT(10) NOT NULL DEFAULT '0',
-  `join_status` INT(1) NOT NULL,
-  PRIMARY KEY (`join_id`)
+CREATE TABLE `team_subscriptions` (
+  `subscription_id` INT NOT NULL AUTO_INCREMENT,
+  `subscription_user` INT NOT NULL,
+  `subscription_team` INT NOT NULL,
+  `subscription_time` INT(10) NOT NULL,
+  `subscription_leave` INT(10) NOT NULL DEFAULT '0',
+  `subscription_status` INT(1) NOT NULL,
+  PRIMARY KEY (`subscription_id`)
 );
 
 CREATE TABLE `desks` (
@@ -129,12 +129,6 @@ CREATE TABLE `wallpapers` (
   PRIMARY KEY (`walpaper_id`)
 );
 
-CREATE TABLE `team_points` (
-  `point_team` INT NOT NULL,
-  `point_nb` INT NOT NULL,
-  `point_year` INT(4) NOT NULL
-);
-
 CREATE TABLE `language_set_association` (
   `association_id` INT NOT NULL AUTO_INCREMENT,
   `association_set` INT NOT NULL,
@@ -148,6 +142,14 @@ CREATE TABLE `treasury` (
   `transaction_designation` VARCHAR(255) NOT NULL,
   `transaction_time` INT(10) NOT NULL,
   PRIMARY KEY (`transaction_id`)
+);
+
+CREATE TABLE `challenge_subscriptions` (
+  `subscription_id` INT NOT NULL AUTO_INCREMENT,
+  `subscription_team` INT NOT NULL,
+  `subscription_challenge` INT NOT NULL,
+  `subscription_time` INT(10) NOT NULL,
+  PRIMARY KEY (`subscription_id`)
 );
 
 ALTER TABLE `teams` ADD CONSTRAINT `teams_fk0` FOREIGN KEY (`team_owner`) REFERENCES `users`(`user_id`);
@@ -166,19 +168,15 @@ ALTER TABLE `challenge_votes` ADD CONSTRAINT `challenge_votes_fk1` FOREIGN KEY (
 
 ALTER TABLE `challenge_votes` ADD CONSTRAINT `challenge_votes_fk2` FOREIGN KEY (`vote_team`) REFERENCES `teams`(`team_id`);
 
-ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk0` FOREIGN KEY (`challenge_id`) REFERENCES `challenges`(`challenge_id`);
+ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk0` FOREIGN KEY (`jury_vote_team`) REFERENCES `teams`(`team_id`);
 
-ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk1` FOREIGN KEY (`challenge_first`) REFERENCES `teams`(`team_id`);
-
-ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk2` FOREIGN KEY (`challenge_second`) REFERENCES `teams`(`team_id`);
-
-ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk3` FOREIGN KEY (`challenge_third`) REFERENCES `teams`(`team_id`);
+ALTER TABLE `challenge_jury_votes` ADD CONSTRAINT `challenge_jury_votes_fk1` FOREIGN KEY (`jury_vote_challenge`) REFERENCES `challenges`(`challenge_id`);
 
 ALTER TABLE `user_subscriptions` ADD CONSTRAINT `user_subscriptions_fk0` FOREIGN KEY (`subscription_user`) REFERENCES `users`(`user_id`);
 
-ALTER TABLE `team_joins` ADD CONSTRAINT `team_joins_fk0` FOREIGN KEY (`join_user`) REFERENCES `users`(`user_id`);
+ALTER TABLE `team_subscriptions` ADD CONSTRAINT `team_subscriptions_fk0` FOREIGN KEY (`subscription_user`) REFERENCES `users`(`user_id`);
 
-ALTER TABLE `team_joins` ADD CONSTRAINT `team_joins_fk1` FOREIGN KEY (`join_team`) REFERENCES `teams`(`team_id`);
+ALTER TABLE `team_subscriptions` ADD CONSTRAINT `team_subscriptions_fk1` FOREIGN KEY (`subscription_team`) REFERENCES `teams`(`team_id`);
 
 ALTER TABLE `desks` ADD CONSTRAINT `desks_fk0` FOREIGN KEY (`desk_president`) REFERENCES `users`(`user_id`);
 
@@ -196,8 +194,10 @@ ALTER TABLE `user_logins` ADD CONSTRAINT `user_logins_fk0` FOREIGN KEY (`login_u
 
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_fk0` FOREIGN KEY (`notification_user`) REFERENCES `users`(`user_id`);
 
-ALTER TABLE `team_points` ADD CONSTRAINT `team_points_fk0` FOREIGN KEY (`point_team`) REFERENCES `teams`(`team_id`);
-
 ALTER TABLE `language_set_association` ADD CONSTRAINT `language_set_association_fk0` FOREIGN KEY (`association_set`) REFERENCES `language_sets`(`set_id`);
 
 ALTER TABLE `language_set_association` ADD CONSTRAINT `language_set_association_fk1` FOREIGN KEY (`association_language`) REFERENCES `languages`(`language_id`);
+
+ALTER TABLE `challenge_subscriptions` ADD CONSTRAINT `challenge_subscriptions_fk0` FOREIGN KEY (`subscription_team`) REFERENCES `teams`(`team_id`);
+
+ALTER TABLE `challenge_subscriptions` ADD CONSTRAINT `challenge_subscriptions_fk1` FOREIGN KEY (`subscription_challenge`) REFERENCES `challenges`(`challenge_id`);

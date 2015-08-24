@@ -1,4 +1,5 @@
 <?php
+
 function addUser($firstname, $lastname, $email, $phone = null, $password, $promotion = null, $facebook = null, $github = null, $google = null, $twitter = null)
 {
     global $db;
@@ -19,21 +20,23 @@ function addUser($firstname, $lastname, $email, $phone = null, $password, $promo
     return true;
 }
 
-function hasTeam($user)
+function getUserTeam($user)
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_leave=0 AND join_status = 1');
+    $query = $db->prepare("select * from team_subscriptions WHERE subscription_user=:user and subscription_status=1 and subscription_leave=0");
     $query->bindValue(':user', $user, PDO::PARAM_INT);
     $query->execute();
-    if ($query->rowCount() > 0)
-        return true;
+    if ($query->rowCount() > 0) {
+        $data = $query->fetchObject();
+        return $data->subscription_team;
+    }
     return false;
 }
 
 function hasApplied($user, $team)
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_team=:team');
+    $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :user AND subscription_team=:team');
     $query->bindValue(':user', $user, PDO::PARAM_INT);
     $query->bindValue(':team', $team, PDO::PARAM_INT);
     $query->execute();
@@ -45,7 +48,7 @@ function hasApplied($user, $team)
 function isTeamOwner($user)
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM team_joins WHERE join_user = :user AND join_leave=0 AND join_status = 1');
+    $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :user AND subscription_leave=0 AND subscription_status = 1');
     $query->bindValue(':user', $user, PDO::PARAM_INT);
     $query->execute();
     if ($query->rowCount() > 0) {

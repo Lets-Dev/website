@@ -7,8 +7,8 @@
  */
 function getSchoolYear($year)
 {
-    return json_encode(array("start" => mktime(0, 0, 0, 9, 1, $year),
-        "end" => mktime(0, 0, 0, 9, 1, $year + 1)));
+    return array("start" => mktime(0, 0, 0, 9, 1, $year),
+        "end" => mktime(0, 0, 0, 9, 1, $year + 1)-1);
 }
 
 /**

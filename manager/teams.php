@@ -78,7 +78,83 @@ if (isset($_GET['team'])) {
             <?php
             break;
         case 'myteam':
+            if (!getUserTeam(getInformation()))
+                redirect("./teams");
+            ?>
+            <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Mon équipe')">
+                <div class="row" style="margin-top: 50px">
+                    <div class="col-md-4">
+                        <div class="box">
+                            <div class="box-body text-center">
+                                <img src="../assets/img/public/teams/lets-dev.png"
+                                     style="margin-top:-50px;height:100px"/>
 
+                                <h1>Let's Dev !</h1>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h3 data-toggle="tooltip" title="Première inscription à un challenge">2015</h3>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h3 data-toggle="tooltip" title="Nombre de challenges effectués">153</h3>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h3>2015</h3>
+                                    </div>
+                                </div>
+                                <p></p>
+                                <hr/>
+                                <div class="row row-centered">
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                    <div class="col-md-3 col-centered text-center">
+                                        <img src="../assets/img/private/languages/ruby.png" class="img-circle"
+                                             style="width: 75%"/>
+
+                                        <p><b>Sofiane</b></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="box">
+                            <div class="box-body">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
             break;
     }
 } else {
@@ -86,15 +162,20 @@ if (isset($_GET['team'])) {
     <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Parcourir les équipes')">
         <div class="row">
             <?php
-            $query0 = $db->prepare('SELECT * FROM team_points
-                              WHERE point_year = :year ORDER BY point_nb');
-            $query0->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
-            $query0->execute();
-            while ($data0 = $query0->fetchObject()) {
-                $query = $db->prepare("SELECT * FROM teams WHERE team_id = :id");
-                $query->bindValue(":id", $data0->point_team, PDO::PARAM_INT);
+            $query = $db->prepare('SELECT *, SUM(jury_vote_points) as sum FROM challenge_jury_votes
+                                    LEFT JOIN teams ON team_id=jury_vote_team
+                                    LEFT JOIN challenges ON challenge_id = jury_vote_challenge
+                                    WHERE challenge_start > :start AND challenge_end < :end
+                                    GROUP BY jury_vote_team
+                                    ORDER BY SUM(jury_vote_points)');
+            $query->bindValue(':start', getSchoolYear(getCurrentYear())['start'], PDO::PARAM_INT);
+            $query->bindValue(':end', getSchoolYear(getCurrentYear())['end'], PDO::PARAM_INT);
+            $query->execute();
+            if ($query->rowCount()==0) {
+                $query = $db->prepare("select * from teams order by team_creation");
                 $query->execute();
-                $data = $query->fetchObject();
+            }
+            while ($data = $query->fetchObject()) {
                 echo '
                 <div class="col-md-4">
                     <div class="team-card text-center">';
@@ -104,9 +185,9 @@ if (isset($_GET['team'])) {
                     echo '<img src="../assets/img/public/default_team.png" class="logo"/>&nbsp;&nbsp;';
                 echo '<div class="content">
                             <h3 class="name"><a href="team/' . $data->team_shortname . '">' . $data->team_name . '</a></h3>';
-                $query2 = $db->prepare('SELECT * FROM team_joins
-                                  LEFT JOIN users ON join_user=users.user_id
-                                  WHERE join_team=:team AND join_status=1');
+                $query2 = $db->prepare('SELECT * FROM team_subscriptions
+                                  LEFT JOIN users ON subscription_user=users.user_id
+                                  WHERE subscription_team=:team AND subscription_status=1');
                 $query2->bindValue(':team', $data->team_id, PDO::PARAM_INT);
                 $query2->execute();
                 $coef = $query2->rowCount() / $config['teams']['max_members'];
@@ -129,7 +210,7 @@ if (isset($_GET['team'])) {
                     echo $data2->user_firstname . " " . $data2->user_lastname . "<br />";
                 echo '"">' . $query2->rowCount() . ' ' . $member . '</span></div>
                             <p class="description">' . $data->team_description . '</p>';
-                if (!hasTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
+                if (!getUserTeam(getInformation()) && isMember(getInformation(), getCurrentYear())) {
                     if (!hasApplied(getInformation(), $data->team_id))
                         echo '
                             <div class="team-footer">

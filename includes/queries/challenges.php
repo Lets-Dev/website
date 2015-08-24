@@ -6,7 +6,7 @@ $return = array('status' => 'success', 'messages' => array());
 
 switch ($_POST['action']) {
 
-    // Créer une équipe
+    // Créer un challenge
     case 'new':
         // On vérifie que les utilisateurs ont la permission
         if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges')) {
@@ -40,13 +40,14 @@ switch ($_POST['action']) {
                 $query->bindValue(':ergonomy', $_POST['ergonomy'], PDO::PARAM_INT);
                 $query->execute();
                 $query->closeCursor();
-                $query = $db -> prepare("select * from language_sets where set_id=:id");
+                $query = $db->prepare("SELECT * FROM language_sets WHERE set_id=:id");
                 $query->bindValue(":id", $_POST['language_set'][$i], PDO::PARAM_INT);
                 $query->execute();
                 $data = $query->fetchObject();
-                //Modification du message slack pour plus de clarté sur les challenges
-                slack($_POST['subject'][$i], true, getInformation("firstname") . " " . getInformation("lastname") . " vient d'ajouter un challenge se déroulant entre le ". date_fr("j M Y", false, $data->challenge_debut) . " et le " . date_fr("j M Y", false, $data->challenge_fin) . ".", $data->set_name, "green");
+
             }
+            // TODO: Ajouter des précisions sur le challenge pour la notification Slack
+            slack(getInformation("firstname") . " " . getInformation("lastname") . " vient de créer un challenge.");
         }
         break;
 
@@ -59,7 +60,7 @@ switch ($_POST['action']) {
         }
 
         // On vérifie que tous les champs sont remplis
-        if (empty($_POST['start']) || empty($_POST['subjects']) || empty($_POST['end']) || empty($_POST['id'])) {
+        if (empty($_POST['start']) || empty($_POST['subjects']) || empty($_POST['end'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Veuillez saisir tous les champs.');
         }
@@ -70,24 +71,18 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Le début du challenge doit être avant la fin.');
         }
 
-        //On vérifie que le challenge n'est pas déja terminé
-        $query = $db -> prepare("select * from challenges WHERE challenge_id=:id");
-        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
-        $query->execute();
-        $data = $query->fetchObject();
-
-        if (time() > $data->challenge_end)
-        {
-            $return['status'] = 'error';
-            array_push($return['messages'], 'Le challenge est terminé. Il ne peut plus être modifié.');
-        }
-
-
-        //On modifie les valeurs
         if ($return['status'] == 'success') {
-            $query = $db->prepare("UPDATE challenges
-                                   SET challenge_start=:start, challenge_end=:end, challenge_subjects=:subjects, challenge_language=:language, challenge_subject=:subject, challenge_jury1=:jury1, challenge_jury2=:jury2, challenge_ergonomy_jury=:ergonomy
-                                   WHERE challenge_id=:id");
+            $query = $db->prepare("UPDATE challenges SET
+                                challenge_start = :start,
+                                challenge_end = :end,
+                                challenge_subjects = :subjects,
+                                challenge_subject = :subject,
+                                challenge_language = :language,
+                                challenge_jury1 = :jury1,
+                                challenge_jury2 = :jury2,
+                                challenge_ergonomy_jury = :ergonomy
+                                WHERE challenge_id = :id");
+            $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
             $query->bindValue(':start', strtotime($_POST['start']), PDO::PARAM_INT);
             $query->bindValue(':end', strtotime($_POST['end']), PDO::PARAM_INT);
             $query->bindValue(':subjects', strtotime($_POST['subjects']), PDO::PARAM_INT);
@@ -96,52 +91,113 @@ switch ($_POST['action']) {
             $query->bindValue(':jury1', $_POST['jury'][1], PDO::PARAM_INT);
             $query->bindValue(':jury2', $_POST['jury'][2], PDO::PARAM_INT);
             $query->bindValue(':ergonomy', $_POST['ergonomy'], PDO::PARAM_INT);
-            $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
             $query->execute();
             $query->closeCursor();
-            $query = $db -> prepare("select * from language_sets where set_id=:id");
+            $query = $db->prepare("SELECT * FROM language_sets WHERE set_id=:id");
             $query->bindValue(":id", $_POST['language_set'], PDO::PARAM_INT);
             $query->execute();
             $data = $query->fetchObject();
-            slack($_POST['subject'], true, getInformation("firstname") . " " . getInformation("lastname") . " vient de modifier un challenge se déroulant entre le ". date_fr("j M Y", false, $data->challenge_debut) . " et le " . date_fr("j M Y", false, $data->challenge_fin) . ".", $data->set_name, "blue");
 
+
+            // TODO: Ajouter des précisions sur le challenge pour la notification Slack
+            slack(getInformation("firstname") . " " . getInformation("lastname") . " vient d'éditer un challenge.");
         }
-        break;
-
-    // Rejoindre une équipe
-    case 'join':
         break;
 
     case 'delete':
         // On vérifie que les utilisateurs ont la permission
-        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges'))
-        {
+        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges')) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Vous n\'avez pas la permission.');
         }
 
         //On vérifie que le challenge ne soit pas déja en cours
-        $query = $db -> prepare("select * from challenges WHERE challenge_id=:id");
+        $query = $db->prepare("SELECT * FROM challenges WHERE challenge_id=:id");
         $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
         $query->execute();
         $data = $query->fetchObject();
 
-        if (time() > $data->challenge_start)
-        {
+        if (time() > $data->challenge_start) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Le challenge a déjà commencé, il ne peut pas être supprimé.');
         }
 
         //On supprime
-        if ($return['status'] == 'success')
-        {
+        if ($return['status'] == 'success') {
             $query = $db->prepare("DELETE FROM challenges WHERE challenge_id=:id");
             $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
             $query->execute();
             array_push($return['messages'], 'Le challenge a bien été supprimé.');
-            slack($data->challenge_subject, true, getInformation("firstname") . " " . getInformation("lastname") . " vient de modifier un challenge se déroulant entre le ". date_fr("j M Y", false, $data->challenge_debut) . " et le " . date_fr("j M Y", false, $data->challenge_fin) . ".", $data->set_name, "red");
+            // TODO: Ajouter des précisions sur le challenge pour la notification Slack
+            slack(getInformation("firstname") . " " . getInformation("lastname") . " vient de supprimer un challenge.");
         }
 
+        break;
+
+    case 'subscribe':
+        if (!isTeamOwner(getInformation())) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'êtes pas propriétaire d\'une équipe.');
+        }
+
+        $query = $db->prepare("SELECT * FROM challenges WHERE challenge_id = :challenge");
+        $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Le challenge n\'existe pas.');
+        } else {
+            $data = $query->fetchObject();
+            if (time() < $data->challenge_start && time() > $data->challenge_subjects) {
+                $return['status'] = 'error';
+                array_push($return['messages'], 'Nous ne sommes pas dans la période d\'inscriptions.');
+            }
+        }
+
+        if ($return['status'] == 'success') {
+            $query = $db->prepare("INSERT INTO challenge_subscriptions (subscription_team, subscription_challenge, subscription_time)
+                              VALUES (:team, :challenge, :time)");
+            $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
+            $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+            $query->bindValue(':time', time(), PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], 'Votre équipe est bien inscrite au challenge.');
+        }
+        break;
+
+    case 'rate':
+        $query = $db->prepare('SELECT * FROM challenges WHERE challenge_id=:id');
+        $query->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Le challenge n\'existe pas.');
+        } else {
+            $data = $query->fetchObject();
+            if (getInformation() != $data->challenge_jury1 && getInformation() != $data->challenge_jury2 && getInformation() != $data->challenge_ergonomy_jury && !checkPrivileges(getInformation())) {
+                $return['status'] = 'error';
+                array_push($return['messages'], 'Vous n\'avez pas la permission d\'évaluer ce challenge.');
+            }
+
+            if ($return['status'] == 'success') {
+                for ($i = 0; $i < count($_POST['team']); $i++) {
+                    $query = $db->prepare("DELETE FROM challenge_jury_votes WHERE jury_vote_challenge=:challenge");
+                    $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+                    $query->execute();
+                    $query->closeCursor();
+
+                    $query = $db->prepare("INSERT INTO challenge_jury_votes
+                                      (jury_vote_team, jury_vote_points, jury_vote_challenge)
+                                      VALUES (:team, :points, :challenge)");
+                    $query->bindValue(':team', $_POST['team'][$i], PDO::PARAM_INT);
+                    $query->bindValue(':points', $_POST['points'][$i], PDO::PARAM_INT);
+                    $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+                    $query->execute();
+                    $query->closeCursor();
+                }
+                array_push($return['messages'], 'Les points ont bien été ajoutés aux équipes.');
+            }
+        }
         break;
 }
 

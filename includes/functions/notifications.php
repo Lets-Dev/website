@@ -1,6 +1,6 @@
 <?php
 
-function slack($text, $attachments = false, $message = null, $title = null, $color = "orange", $room = "general")
+function slack($text, $attachments = false, $message = null, $title = null, $color = "orange", $room="bureau")
 {
     global $slack;
     switch ($color) {
@@ -18,6 +18,9 @@ function slack($text, $attachments = false, $message = null, $title = null, $col
             break;
 
     }
+
+
+
     if ($attachments === true)
         $data = "payload=" . json_encode(
                 array(
@@ -55,5 +58,3 @@ function slack($text, $attachments = false, $message = null, $title = null, $col
     $context = stream_context_create($opts);
     file_get_contents($slack[$room], false, $context);
 }
-
-?>

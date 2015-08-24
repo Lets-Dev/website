@@ -7,6 +7,7 @@ include('functions/encoding.php');
 include('functions/notifications.php');
 include('functions/dates.php');
 include('functions/users.php');
+include('functions/teams.php');
 include('functions/design.php');
 
 include('classes/notifications.php');
