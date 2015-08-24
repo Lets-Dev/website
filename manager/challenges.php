@@ -160,7 +160,93 @@ switch ($_GET['action']) {
         break;
     case 'manage':
         ?>
+        <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Gestion des langages')">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3>Gestion des challenges
+                                <a class="btn btn-ld btn-flat pull-right" href="challenges/new">Ajouter un challenge</a>
+                            </h3>
+                        </div>
+                        <div class="box-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Challenge</th>
+                                    <th>Dates</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                //On récupère tous les challenges, du plus récent au plus ancien
+                                $query = $db->prepare("SELECT * FROM challenges,language_sets WHERE challenge_language=set_id ORDER BY challenge_start DESC");
+                                $query->execute();
+                                while ($data = $query->fetchObject()) {
+                                    echo '<tr>
+                                        <td>';
+                                        //On affiche le titre, les date de début, de milieu et de fin
+                                    echo $data->set_name . '</td>
+                                        <td><span class="label label-success">' . date_fr("j M Y", false, $data->challenge_start) . '</span>
+                                        <span class="label label-warning">' . date_fr("j M Y", false, $data->challenge_subjects) . '</span>
+                                        <span class="label label-danger">' . date_fr("j M Y", false, $data->challenge_end) . '</span></td>
+                                        <td class="text-right">';
+                                        //On affiche le bouton d'édition et/ou de suppression si les conditions sont remplies
+                                        if (time() < $data->challenge_end)
+                                            echo '<a href="challenges/edit/' . $data->challenge_id . '" class="btn btn-flat btn-xs btn-warning">Modifier</a> ';
+                                        if (time() < $data->challenge_start)
+                                            echo '<button class="btn btn-flat btn-xs btn-danger" onclick="deleteLanguage(' . $data->challenge_id . ')">Supprimer</button>';
+                                        echo '</td>
+                                    </tr>';
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <link rel="stylesheet" href="../assets/js/datatables/dataTables.bootstrap.css">
+        <script src="../assets/js/datatables/jquery.dataTables.min.js"></script>
+        <script src="../assets/js/datatables/dataTables.bootstrap.min.js"></script>
+
+        <script>
+            $('.table').DataTable({
+                "paging": false,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": false,
+                "info": false,
+                "autoWidth": false
+            });
+            function deleteLanguage(id) {
+                var button = $(event.target);
+                $('.btn').attr('disabled', 'disabled');
+                $.post('../includes/queries/challenges.php', {
+                        action: "delete",
+                        id: id
+                    },
+                    function (data) {
+                        var i;
+                        console.log(data);
+                        if (data.status == "success") {
+                            button.closest('tr').remove();
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["success"](data.messages[i])
+                        }
+                        else
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["error"](data.messages[i])
+                        $('.btn').removeAttr('disabled');
+                    })
+            }
+        </script>
         <?php
+        break;
+    case 'edit' :
+        //Insérer le formulaire d'édition de challenges ici
         break;
     case 'current':
     ?>
