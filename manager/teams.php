@@ -294,8 +294,7 @@ if (isset($_GET['team'])) {
                                   WHERE subscription_team=:team AND subscription_status=1');
                         $queryMembers->bindValue(':team', $dataTeam->team_id, PDO::PARAM_INT);
                         $queryMembers->execute();
-                        $coef = $queryMembers->rowCount() / $config['teams']['max_members'];
-                        if ($queryMembers->rowCount() < $config['teams']['max_members'] || $coef >= 1)
+                        if ($queryMembers->rowCount() < $config['teams']['min_members'] || $queryMembers->rowCount() > $config['teams']['max_members'])
                             $class = "danger";
                         else $class = "success";
 
