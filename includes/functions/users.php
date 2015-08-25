@@ -45,17 +45,28 @@ function hasApplied($user, $team)
     return false;
 }
 
-function isTeamOwner($user)
+function isTeamOwner($user, $team = null)
 {
     global $db;
-    $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :user AND subscription_leave=0 AND subscription_status = 1');
-    $query->bindValue(':user', $user, PDO::PARAM_INT);
-    $query->execute();
-    if ($query->rowCount() > 0) {
-        $data = $query->fetchObject();
-        $team = $data->subscription_team;
-        $query->closeCursor();
 
+    if ($team == null) {
+        $query = $db->prepare('SELECT * FROM team_subscriptions WHERE subscription_user = :user AND subscription_leave=0 AND subscription_status = 1');
+        $query->bindValue(':user', $user, PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() > 0) {
+            $data = $query->fetchObject();
+            $team = $data->subscription_team;
+            $query->closeCursor();
+
+            $query = $db->prepare("SELECT * FROM teams WHERE team_owner=:user AND team_id = :team");
+            $query->bindValue(":user", $user, PDO::PARAM_INT);
+            $query->bindValue(":team", $team, PDO::PARAM_INT);
+            $query->execute();
+            if ($query -> rowCount()>0)
+                return true;
+        }
+    }
+    else {
         $query = $db->prepare("SELECT * FROM teams WHERE team_owner=:user AND team_id = :team");
         $query->bindValue(":user", $user, PDO::PARAM_INT);
         $query->bindValue(":team", $team, PDO::PARAM_INT);

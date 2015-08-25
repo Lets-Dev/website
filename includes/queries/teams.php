@@ -230,36 +230,56 @@ switch ($_POST['action']) {
         else
             $status = 0;
 
-        // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
-        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+        $query = $db->prepare("select * from team_subscriptions WHERE subscription_id=:id");
         $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
-        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() == 0) {
             $return['status'] = 'error';
-            array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+            array_push($return['messages'], 'Cette inscription n\'existe pas.');
         }
-        $query->closeCursor();
+        else {
+            $data = $query->fetchObject();
 
-        if ($return['status'] == 'success' && $status == 1) {
-            $query = $db->prepare('UPDATE team_subscriptions SET subscription_status=:status, subscription_time = :time WHERE subscription_team=:team AND subscription_user=:user');
-            $query->bindValue(':status', $status, PDO::PARAM_INT);
-            $query->bindValue(':time', time(), PDO::PARAM_INT);
-            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
-            $query->bindValue(':user', $_POST['user'], PDO::PARAM_INT);
-            $query->execute();
-            array_push($return['messages'], 'L\'utilisateur a bien été ajouté à votre équipe.');
+            // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
+            $query1 = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
+            $query1->bindValue(':id', $data->subscription_team, PDO::PARAM_INT);
+            $query1->bindValue(':owner', getInformation(), PDO::PARAM_INT);
+            $query1->execute();
+            if ($query1->rowCount() == 0) {
+                $return['status'] = 'error';
+                array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
+            }
+            $query1->closeCursor();
 
-            $query = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
-            $query->bindValue(':team', $_POST['team'], PDO::PARAM_INT);
-            $query->execute();
-            if ($data = $query->fetchObject()) {
-                $notification = new Notifications($_POST['user']);
-                $notification->create("Vous avez été accepté dans l'équipe \"" . $data->team_name . "\".");
-                $notification->destruct();
+            if ($return['status'] == 'success' && ($status == 1 || $status == 2)) {
+                $query1 = $db->prepare('UPDATE team_subscriptions SET subscription_status=:status, subscription_time = :time WHERE subscription_id=:id');
+                $query1->bindValue(':status', $status, PDO::PARAM_INT);
+                $query1->bindValue(':time', time(), PDO::PARAM_INT);
+                $query1->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+                $query1->execute();
+
+                if ($status == 1) {
+                    $query1 = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
+                    $query1->bindValue(':team', $data->subscription_team, PDO::PARAM_INT);
+                    $query1->execute();
+                    if ($data1 = $query1->fetchObject()) {
+                        $notification = new Notifications($data->subscription_user);
+                        $notification->create("Vous avez été accepté dans l'équipe \"" . $data1->team_name . "\".");
+                    }
+                    array_push($return['messages'], 'La demande d\'adhésion a bien été acceptée.');
+                }
+                else {
+                    $query1 = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
+                    $query1->bindValue(':team', $data->subscription_team, PDO::PARAM_INT);
+                    $query1->execute();
+                    if ($data1 = $query1->fetchObject()) {
+                        $notification = new Notifications($data->subscription_user);
+                        $notification->create("Votre demande d'adhésion à \"" . $data1->team_name . "\" a été rejetée.");
+                    }
+                    array_push($return['messages'], 'La demande d\'adhésion a bien été rejetée');
+                }
             }
         }
-
         break;
 
     case 'kick':

@@ -213,3 +213,6 @@
 .col-centered.text-center {
   text-align: center;
 }
+small {
+  color: #999999;
+}

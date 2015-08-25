@@ -11,7 +11,7 @@ class Notifications
 
     public function __destruct()
     {
-
+        return 1;
     }
 
     // Créer une notification
