@@ -266,6 +266,15 @@ switch ($_POST['action']) {
                         $notification = new Notifications($data->subscription_user);
                         $notification->create("Vous avez été accepté dans l'équipe \"" . $data1->team_name . "\".");
                     }
+
+
+                    $query2 = $db->prepare('UPDATE team_subscriptions SET subscription_status=2, subscription_time = :time WHERE subscription_user=:user AND subscription_status=0');
+                    $query2->bindValue(':time', time(), PDO::PARAM_INT);
+                    $query2->bindValue(':user', $data->subscription_user, PDO::PARAM_INT);
+                    $query2->execute();
+                    $notification = new Notifications($data->subscription_user);
+                    $notification->create("Nous avons décliné automatiquement toutes les autres potentielles demandes d'adhésion que vous avez envoyées aux autres équipes.");
+
                     array_push($return['messages'], 'La demande d\'adhésion a bien été acceptée.');
                 }
                 else {
