@@ -29,8 +29,8 @@
                 </a>
                 <ul class="treeview-menu">
                     <li>
-                        <a href="challenges/current">Challenge en cours</a>
-                        <a href="challenges/all">Tous les Challenges</a>
+                        <a href="challenges/current">Challenges en cours</a>
+                        <a href="challenges/all">Challenges précédents</a>
                     </li>
                 </ul>
             </li>

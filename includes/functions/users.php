@@ -53,10 +53,10 @@ function isTeamOwner($user)
     $query->execute();
     if ($query->rowCount() > 0) {
         $data = $query->fetchObject();
-        $team = $data->join_team;
+        $team = $data->subscription_team;
         $query->closeCursor();
 
-        $query = $db->prepare("SELECT * FROM teams WHERE team_creation=:user AND team_id = :team");
+        $query = $db->prepare("SELECT * FROM teams WHERE team_owner=:user AND team_id = :team");
         $query->bindValue(":user", $user, PDO::PARAM_INT);
         $query->bindValue(":team", $team, PDO::PARAM_INT);
         $query->execute();

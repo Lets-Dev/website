@@ -16,7 +16,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'print') {
           <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-4">
-                        <img src="../assets/img/public/banner.png" class="img-responsive">
+                        <img src="../assets/img/public/logo.png" class="img-responsive" style="height:100px;">
                     </div>
                     <div class="col-xs-8">
                         <h2 class="pull-right">
@@ -156,8 +156,8 @@ include('sidebar.php');
 
             // On enregistre le bilan du mois
             $query = $db->prepare("SELECT sum(transaction_amount) AS total,
-                                  sum(CASE WHEN transaction_amount < 0 THEN transaction_amount ELSE 0 END) AS depenses,
-                                  sum(CASE WHEN transaction_amount >= 0 THEN transaction_amount ELSE 0 END) AS recettes
+                                  sum(CASE WHEN transaction_amount < 0 THEN transaction_amount END) AS depenses,
+                                  sum(CASE WHEN transaction_amount >= 0 THEN transaction_amount END) AS recettes
                                   FROM treasury WHERE transaction_time BETWEEN :start AND :end");
             $query->bindValue(":start", $first, PDO::PARAM_INT);
             $query->bindValue(":end", $last, PDO::PARAM_INT);
@@ -252,6 +252,7 @@ include('sidebar.php');
                                 <table class="table">
                                     <thead>
                                     <tr>
+                                        <th width="30px"></th>
                                         <th>Date</th>
                                         <th>Désignation</th>
                                         <th class='text-right'>Montant</th>
@@ -264,15 +265,41 @@ include('sidebar.php');
                                     $query->bindValue(":end", $last, PDO::PARAM_INT);
                                     $query->execute();
                                     while ($data = $query->fetchObject()) {
-                                        echo "<tr>
-                                            <td>" . date_fr("d F Y", false, $data->transaction_time) . "</td>
+                                        echo "<tr>";
+                                            if ($data->transaction_creation_time > time()-(60*5))
+                                                echo "<td><button class='btn btn-link btn-xs' onclick='deleteTransaction(".$data->transaction_id.")'><i class='fa fa-times'></i></button>";
+                                            else echo "<td></td>";
+                                            echo "<td>" . date_fr("d F Y", false, $data->transaction_time) . "</td>
                                             <td>" . $data->transaction_designation . "</td>
-                                            <td class='text-right'>" . $data->transaction_amount . " €</td>
+                                            <td class='text-right'>" . number_format($data->transaction_amount,2, ",", " ") . " €</td>
                                         </tr>";
                                     }
                                     ?>
                                     </tbody>
                                 </table>
+                                <script>
+                                function deleteTransaction(transaction) {
+                                    var button = $(event.target);
+                                    $('.btn').attr('disabled', 'disabled');
+                                    $.post('../includes/queries/treasury.php', {
+                                            action: "delete",
+                                            id: transaction
+                                        },
+                                        function (data) {
+                                            var i;
+                                            console.log(data);
+                                            if (data.status == "success") {
+                                                button.closest('tr').remove();
+                                                for (i = 0; i < data.messages.length; i++)
+                                                    toastr["success"](data.messages[i])
+                                            }
+                                            else
+                                                for (i = 0; i < data.messages.length; i++)
+                                                    toastr["error"](data.messages[i])
+                                            $('.btn').removeAttr('disabled');
+                                        })
+                                }
+                                </script>
                             </div>
                         </div>
                     </div>

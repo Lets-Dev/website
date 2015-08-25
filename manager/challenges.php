@@ -544,11 +544,14 @@ switch ($_GET['action']) {
                         </div>
                     </div>
                     <?php
-                        if (isTeamOwner(getInformation()) && time() >= $data -> challenge_start && time() < $data->challenge_subjects) { ?>
+                        if (subscribedToChallenge(getUserTeam(getInformation()), $data->challenge_id))
+                            echo "<p class='text-center'><b>Votre équipe est inscrite à ce challenge</b></p>";
+                        else if (isTeamOwner(getInformation()) && time() >= $data -> challenge_start && time() < $data->challenge_subjects) { ?>
                     <div class="text-center">
                        <button class="btn btn-flat btn-ld" onclick="subscribeToChallenge(<?php echo $data->challenge_id ?>)">Inscrire mon équipe à ce challenge</button>
                     </div>
                         <?php }
+
                      ?>
                 </div>
             </div>
@@ -563,8 +566,22 @@ switch ($_GET['action']) {
         ?>
         <script>
             function subscribeToChallenge(challenge_id) {
-                $('.btn').attr('disabled', 'disabled');
-                $.post()
+                var button = $(event.target);
+                button.attr("disabled", "disabled");
+                $.post('../includes/queries/challenges', {
+                        action: 'subscribe',
+                        challenge: challenge_id
+                    }, function (data) {
+                        var i;
+                        for (i = 0; i < data.messages.length; i++)
+                            toastr[data.status](data.messages[i])
+                        if (data.status == "success") {
+                            event.target.className = '';
+                            button.addClass('btn btn-flat btn-success').html('<i class="fa fa-check"></i> Inscription effectuée')
+                        }
+                        button.attr('disabled', 'disabled')
+                    }
+                )
             }
         </script>
         <?php
@@ -593,15 +610,6 @@ switch ($_GET['action']) {
             echo '<div class="col-md-offset-2 col-md-4">';
         ?>
         <div class="box" style="margin-top: 50px;">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="progress progress-xxs" style="margin-bottom: 0">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="background-color:#dd4b39;width: 100%">
-                                <span class="sr-only">100</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             <div class="box-header">
                 <h3>
                     Challenge #<?php
@@ -680,9 +688,13 @@ switch ($_GET['action']) {
                         </p>
                     </div>
                 </div>
-                <div class="box-footer text-center">
-                    <button class="btn btn-flat btn-ld">S'inscrire</button>
-                </div>
+                <?php
+                if (getInformation() == $data->challenge_jury1 || getInformation() == $data->challenge_jury2 || getInformation() == $data->challenge_ergonomy_jury || checkPrivileges(getInformation()))
+                        echo '
+                    <div class="text-center">
+                       <a class="btn btn-flat btn-success" href="./challenges/evaluate/'.$data->challenge_id.'">Évaluer le challenge</a>
+                    </div>'
+                    ?>
             </div>
         </div>
         </div>
@@ -722,7 +734,7 @@ switch ($_GET['action']) {
                     <h4>Nombre de points restants à donner: <span id="points_nb"><?php echo $config['challenges']['points_per_challenge'] ?></span></h4>
                     <form id="rate_challenge">
                     <input type="hidden" name="action" value="rate"/>
-                    <input type="hidden" name="challenge" value="<?php $_GET['id'] ?>"/>
+                    <input type="hidden" name="challenge" value="<?php echo $_GET['id'] ?>"/>
                     <?php
                     $query1 = $db->prepare("SELECT * FROM challenge_subscriptions
                                             LEFT JOIN teams ON team_id=subscription_team
@@ -730,14 +742,26 @@ switch ($_GET['action']) {
                     $query1->bindValue(':challenge', $_GET['id'], PDO::PARAM_INT);
                     $query1->execute();
                     while ($data1 = $query1->fetchObject()) {
+                        $query2 = $db->prepare("select * from challenge_jury_votes where jury_vote_challenge=:challenge and jury_vote_team=:team");
+                        $query2->bindValue(':challenge', $_GET['id'], PDO::PARAM_INT);
+                        $query2->bindValue(':team', $data1->team_id, PDO::PARAM_INT);
+                        $query2->execute();
+                        if ($query2->rowCount() > 0)
+                        {
+                        $data2 = $query2->fetchObject();
+                        $total = $data2->jury_vote_points;
+                        }
+                        else $total = 0;
+                        $query2->closeCursor();
+
                         echo '<div class="form-group">
                                 <label>'.$data1->team_name.'</label>
                                 <input type="hidden" name="team[]" value="'.$data1->team_id.'" />
-                                <input type="number" name="points[]" class="form-control" />
+                                <input type="number" name="points[]" class="form-control" value="'.$total.'" />
                             </div>';
                     }
                     ?>
-                    <button class="btn btn-flat btn-block btn-ld">Évaluer le challenge</button>
+                    <button class="btn btn-flat btn-block btn-ld" disabled>Évaluer le challenge</button>
                     </form>
                     </div>
                     </div>
@@ -756,36 +780,35 @@ switch ($_GET['action']) {
                             })
                             $('#points_nb').text(max - total)
 
-                            if (total > max) {
+                            if (total != max)
                                 $('#rate_challenge button').attr('disabled', 'disabled')
                             else
                                 $('#rate_challenge button').removeAttr('disabled')
-                            }
                         }
                         $('#rate_challenge .form-control').on('input', function() {
                             total()
-                        });
+                        })
                         $("#rate_challenge").submit(function () {
-                        $('.btn').attr('disabled', 'disabled');
-                        $.ajax({
-                            type: "POST",
-                            url: "../includes/queries/challenges.php",
-                            data: $("#rate_challenge").serialize(),
-                            success: function (data) {
-                                console.log(data);
-                                if (data.status === "success") {
-                                    window.location = "./users/desks/manage";
+                            $('.btn').attr('disabled', 'disabled');
+                            $.ajax({
+                                type: "POST",
+                                url: "../includes/queries/challenges.php",
+                                data: $("#rate_challenge").serialize(),
+                                success: function (data) {
+                                    console.log(data);
+                                    if (data.status === "success") {
+                                        window.location = "./challenges/all";
+                                    }
+                                    else {
+                                        var i;
+                                        for (i = 0; i < data.messages.length; i++)
+                                            toastr["error"](data.messages[i])
+                                    }
+                                    $('.btn').removeAttr('disabled');
                                 }
-                                else {
-                                    var i;
-                                    for (i = 0; i < data.messages.length; i++)
-                                        toastr["error"](data.messages[i])
-                                }
-                                $('.btn').removeAttr('disabled');
-                            }
+                            });
+                            return false;
                         });
-                        return false;
-                    });
                     </script>
                     <?php
                 }

@@ -153,6 +153,17 @@ switch ($_POST['action']) {
                 array_push($return['messages'], 'Nous ne sommes pas dans la période d\'inscriptions.');
             }
         }
+        $query->closeCursor();
+
+        $query = $db->prepare("SELECT * FROM challenge_subscriptions WHERE subscription_challenge = :challenge and subscription_team=:team");
+        $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+        $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
+        $query->execute();
+        if ($query->rowCount() == 0) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous êtes déjà inscrit à ce challenge.');
+        }
+        $query->closeCursor();
 
         if ($return['status'] == 'success') {
             $query = $db->prepare("INSERT INTO challenge_subscriptions (subscription_team, subscription_challenge, subscription_time)
@@ -167,7 +178,7 @@ switch ($_POST['action']) {
 
     case 'rate':
         $query = $db->prepare('SELECT * FROM challenges WHERE challenge_id=:id');
-        $query->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
+        $query->bindValue(':id', $_POST['challenge'], PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() == 0) {
             $return['status'] = 'error';
@@ -177,6 +188,15 @@ switch ($_POST['action']) {
             if (getInformation() != $data->challenge_jury1 && getInformation() != $data->challenge_jury2 && getInformation() != $data->challenge_ergonomy_jury && !checkPrivileges(getInformation())) {
                 $return['status'] = 'error';
                 array_push($return['messages'], 'Vous n\'avez pas la permission d\'évaluer ce challenge.');
+            }
+
+            foreach ($_POST['points'] as $id => $value)
+                if (empty($value))
+                    $value = 0;
+
+            if (array_sum($_POST['points']) != $config['challenges']['points_per_challenge']) {
+                $return['status'] = 'error';
+                array_push($return['messages'], 'Le total de points est différent que celui indiqué.');
             }
 
             if ($return['status'] == 'success') {
