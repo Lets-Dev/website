@@ -1,5 +1,4 @@
 <?php
-include('../includes/version.php');
 $onload = "getWallpaper('manager');";
 if (isset($_GET['alert'])) {
     switch ($_GET['alert']) {
@@ -11,17 +10,6 @@ if (isset($_GET['alert'])) {
 ?>
 <body class="skin-black fixed" onload="<?php echo $onload; ?>">
 <div class="wrapper" id="wallpaper">
-    <div
-        style="position: fixed;bottom: 10px; right: 10px; color: #FEFEFE; text-shadow: 1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000"
-        class="text-right">
-        <?php
-        foreach ($version as $versioning => $title) {
-            $html = '<b>' . $versioning . '</b><p>' . $title . '</p>';
-        }
-        echo $html;
-
-        ?>
-    </div>
     <header class="main-header">
         <a href="./index" class="logo hidden-xs">
             <span class="logo-lg"><img src="../assets/img/public/banner_borderless.png" class="img-responsive"></span>
@@ -33,6 +21,11 @@ if (isset($_GET['alert'])) {
 
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
+                    <li>
+                        <a href="https://letsdevatig2i.slack.com/signup" title="Slack" target="_blank">
+                            <i class="fa fa-slack"></i>
+                        </a>
+                    </li>
                     <?php
                     $n = new Notifications(getInformation());
                     $unread = $n->unread();
@@ -102,10 +95,10 @@ if (isset($_GET['alert'])) {
                             </li>
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="./profile.php" class="btn btn-default btn-flat">Mon Compte</a>
+                                    <a href="./profile" class="btn btn-default btn-flat">Mon Compte</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="../signout.php" class="btn btn-default btn-flat">Déconnexion</a>
+                                    <a href="../signout" class="btn btn-default btn-flat">Déconnexion</a>
                                 </div>
                             </li>
                         </ul>

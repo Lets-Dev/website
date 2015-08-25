@@ -61,14 +61,14 @@ function date_fr($format, $ascii = false, $timestamp = false)
     if (!$ascii)
         $texte_fr = array(
             "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim",
-            "Jan", "F&eacute;v", "Mar", "Avr", "Mai", "Jui",
-            "Jui", "Ao&ucirc;", "Sep", "Oct", "Nov", "D&eacute;c"
+            "Jan", "F&eacute;v", "Mar", "Avr", "Mai", "Juin",
+            "Juil", "Ao&ucirc;", "Sep", "Oct", "Nov", "D&eacute;c"
         );
     else
         $texte_fr = array(
             "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim",
-            "Jan", "Fev", "Mar", "Avr", "Mai", "Jui",
-            "Jui", "Aou", "Sep", "Oct", "Nov", "Dec"
+            "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
+            "Juil", "Aou", "Sep", "Oct", "Nov", "Dec"
         );
 
 

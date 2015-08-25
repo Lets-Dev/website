@@ -5,18 +5,18 @@ $return = array('status' => 'success', 'messages' => array());
 switch ($_POST['action']) {
     // Modification des informations de contact (téléphone, e-mail)
     case 'edit_contact':
-        // TODO: checkEmail()
-        //if (checkEmail($_POST['email'])) {
-        $query = $db->prepare('UPDATE users SET user_email=:email AND user_phone = :phone');
-        $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
-        $query->bindValue(':phone', $_POST['phone'], PDO::PARAM_STR);
-        $query->execute();
-        array_push($return['messages'], 'Les informations de contact ont bien été modifiées.');
-        //}
-//        else {
-//        $return['status']='error';
-//        array_push($return['messages'], 'L\'adresse e-mail saisie n\'est pas valide.');
-//      }
+        if (filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            $query = $db->prepare('UPDATE users SET user_email=:email, user_phone = :phone WHERE user_id=:id');
+            $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
+            $query->bindValue(':phone', $_POST['phone'], PDO::PARAM_STR);
+            $query->bindValue(':id', getInformation(), PDO::PARAM_STR);
+            $query->execute();
+            array_push($return['messages'], 'Les informations de contact ont bien été modifiées.');
+        }
+        else {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'L\'adresse e-mail saisie est invalide.');
+        }
         break;
 
     // Modification du mot de passe
@@ -48,7 +48,7 @@ switch ($_POST['action']) {
             $query->bindValue(':password', encode($_POST['current']), PDO::PARAM_STR);
             $query->bindValue(':new', encode($_POST['new']), PDO::PARAM_STR);
             $query->execute();
-            array_push($return['messages'], 'Le mot de passe a bien été changé');
+            array_push($return['messages'], 'Le mot de passe a bien été changé.');
         }
         break;
 

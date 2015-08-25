@@ -114,8 +114,9 @@ if (isset($_GET['team'])) {
 
 
             $queryMembers = $db->prepare("SELECT * FROM team_subscriptions
-                                                            LEFT JOIN users ON user_id=subscription_user
-                                                            WHERE subscription_team=:team AND subscription_status=1 AND subscription_leave=0");
+                                        LEFT JOIN users ON user_id=subscription_user
+                                        WHERE subscription_team=:team AND subscription_status=1 AND subscription_leave=0
+                                        ORDER BY user_firstname");
             $queryMembers->bindValue(':team', $dataTeam->team_id, PDO::PARAM_INT);
             $queryMembers->execute();
 
@@ -138,8 +139,12 @@ if (isset($_GET['team'])) {
                             </div>
                             <div class="box-body">
                                 <?php
+                                $i = true;
                                 while ($dataChallenges = $queryChallenges->fetchObject()) {
-                                    echo "<p>" . $dataChallenges->set_name . " <br/><small>Le " . date_fr("j F Y", false, $dataChallenges->subscription_time) . "</small></p><hr />";
+                                    if (!$i)
+                                        echo '<hr />';
+                                    echo "<p>" . $dataChallenges->set_name . " <br/><small>Le " . date_fr("j F Y", false, $dataChallenges->subscription_time) . "</small></p>";
+                                    $i = false;
                                 }
                                 ?>
                             </div>
@@ -204,8 +209,11 @@ if (isset($_GET['team'])) {
                             </div>
                             <div class="box-body">
                                 <?php
+                                $i = true;
                                 while ($dataSubscriptions = $querySubscriptions->fetchObject()) {
-                                    if ($dataSubscriptions->subscription_status == 1 || getUserTeam(getInformation()) == $dataTeam->team_id) {
+                                    if ($dataSubscriptions->subscription_status != 2) {
+                                        if (!$i)
+                                            echo '<hr />';
                                         echo '
                                     <div class="row">
                                         <div class="col-md-3">
@@ -218,8 +226,8 @@ if (isset($_GET['team'])) {
                                             case 0:
                                                 if (isTeamOwner(getInformation(), $dataSubscriptions->subscription_team))
                                                     echo '<small id="answer_' . $dataSubscriptions->subscription_id . '">
-                                                                                    <a href="#" onclick="answerSubscription(' . $dataSubscriptions->subscription_id . ',\'yes\');return false;">Accepter</a> - <a href="#" onclick="answerSubscription(' . $dataSubscriptions->subscription_id . ',\'no\');return false;">Refuser</a>
-                                                                                </small>';
+                                                              <a href="#" onclick="answerSubscription(' . $dataSubscriptions->subscription_id . ',\'yes\');return false;">Accepter</a> - <a href="#" onclick="answerSubscription(' . $dataSubscriptions->subscription_id . ',\'no\');return false;">Refuser</a>
+                                                          </small>';
                                                 elseif (getUserTeam(getInformation()) == $dataSubscriptions->subscription_team)
                                                     echo '<small>En attente depuis le ' . date_fr('j F Y', false, $dataSubscriptions->subscription_time) . '</small>';
                                                 break;
@@ -228,7 +236,8 @@ if (isset($_GET['team'])) {
                                                 break;
                                         }
                                         echo '</div>
-                                        </div><hr />';
+                                        </div>';
+                                        $i = false;
                                     }
                                 }
                                 ?>
