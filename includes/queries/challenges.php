@@ -1,5 +1,6 @@
 <?php
 include('../autoload.php');
+include('../functions/dates.php');
 header('Content-Type: application/json');
 
 $return = array('status' => 'success', 'messages' => array());
@@ -166,6 +167,18 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         if ($return['status'] == 'success') {
+            if (getTeamPoints(getUserTeam(getInformation()), getCurrentYear()) == 0)
+            {
+                $query = $db->prepare("INSERT INTO team_points (point_team, point_nb, point_year) VALUES (:team, :nb, :year)");
+                $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
+                $query->bindValue(':nb', getLowestTeamPoint(getCurrentYear())*0.8, PDO::PARAM_INT);
+                $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
+
+                $query->execute();
+
+                $query->closeCursor();
+            }
+
             $query = $db->prepare("INSERT INTO challenge_subscriptions (subscription_team, subscription_challenge, subscription_time)
                               VALUES (:team, :challenge, :time)");
             $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
