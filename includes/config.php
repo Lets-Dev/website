@@ -17,7 +17,8 @@ $config = array(
     'challenges' =>
         array(
             'languages_per_challenge' => 2,
-            'points_per_challenge' => 1000
+            'points_per_challenge' => 1000,
+            'days_to_rate' => 15
         ),
     'graphic' =>
         array(
@@ -30,7 +31,6 @@ $config = array(
             )
 
         ),
-    'path' => '/lets-dev',
     'expressions' => array(
         'member' => 'Membre de Let\'s Dev !',
         'non-member' => 'Utilisateur de Let\'s Dev !'

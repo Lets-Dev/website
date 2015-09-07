@@ -2,7 +2,6 @@
 include('includes/autoload.php');
 if (checkSession())
     header('Location: manager/index?alert=already_loggedin');
-include('includes/version.php');
 include('includes/layouts/sign_header.php');
 include('includes/libraries/Facebook/autoload.php');
 

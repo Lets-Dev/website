@@ -25,6 +25,28 @@ h1, h2, h3, h4, h5, h6 {
   border-color: darken(@orangeh, 5%);
 }
 
+.btn-ld-border {
+  color: @orange;
+  background-color: transparent;
+  border: 2px solid @orange;
+  font-weight: bold;
+}
+
+.btn-ld-border:hover {
+  color: @writingd;
+  background-color: @orange;
+  border: 2px solid @orange;
+  font-weight: bold;
+}
+
+.btn-flat {
+  border-radius: 0;
+}
+
+.black-filter {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 .has-feedback > select {
   -webkit-appearance: none;
 }
@@ -276,6 +298,110 @@ h1, h2, h3, h4, h5, h6 {
 .col-centered.text-center {
   text-align: center;
 }
+
 small {
   color: #999
+}
+
+.navbar-transparent .navbar-nav > li {
+  margin-left: 20px;
+}
+
+.navbar-transparent .navbar-nav > li > a {
+  box-sizing: border-box;
+  border: solid 2px @orange;
+  color: @orange;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.navbar-transparent .navbar-nav > li > a:hover {
+  border: solid 2px @orange;
+  background: @orange;
+  box-sizing: border-box;
+  color: @writingd;
+}
+
+.navbar-transparent .navbar-toggle {
+  border: solid 2px @orange;
+  color: @orange;
+  margin: 0;
+  padding: 15px 15px;
+}
+
+.row-height {
+  display: table;
+  table-layout: fixed;
+  height: 100%;
+  width: 100%;
+}
+
+.col-height {
+  display: table-cell;
+  float: none;
+  height: 100%;
+}
+
+.col-top {
+  vertical-align: top;
+}
+
+.col-middle {
+  vertical-align: middle;
+}
+
+.col-bottom {
+  vertical-align: bottom;
+}
+
+.index-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -10;
+  box-shadow: inset 0 7px 9px -7px #000;
+  margin-top: 30px;
+  background: @dark;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: @writingd;
+}
+.index-footer small {
+  color: @writingd;
+}
+.index-footer .logo {
+  width: 50%;
+  -webkit-filter: drop-shadow(0px 0px 10px @writingd);
+  filter: drop-shadow(0px 0px 10px @writingd);
+}
+.motto {
+  color: @orange;
+  text-shadow: 2px 0 0 @dark, -2px 0 0 @dark, 0 2px 0 @dark, 0 -2px 0 @dark, 1px 1px @dark, -1px -1px 0 @dark, 1px -1px 0 @dark, -1px -1px 0 @dark;
+}
+.user-card {
+  padding-top: 47px;
+}
+.user-card.no-padding{
+  padding-top: 0;
+}
+.user-card .user-pic{
+  position: absolute;
+  left: 50%;
+  margin-left: -45px;
+  border: 2px solid @writingd;
+  border-radius: 100%;
+  z-index: 5;
+}
+.user-card .user-description {
+  position: relative;
+  top: 47px;
+  width: 100%;
+}
+.user-card .user-description .box {
+  padding-top: 30px;
+}
+body {
+  background-color: @dark;
 }

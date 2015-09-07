@@ -1,5 +1,5 @@
-function getWallpaper(source) {
-    var url;
+function getWallpaper(source, blur) {
+    var url, css;
     switch (source) {
         case 'manager':
             url = '../includes/queries/wallpaper_of_the_day.php';
@@ -8,11 +8,26 @@ function getWallpaper(source) {
             url = 'includes/queries/wallpaper_of_the_day.php';
     }
     $.getJSON(url, function (data) {
-        $('#wallpaper').css({
-            'background': 'url(' + data.url + ') no-repeat fixed',
-            'background-size': 'cover',
-            'background-position': 'center center'
-        })
+        if (blur ==true)
+            css = {
+                'background': 'url(' + data.url + ') no-repeat fixed',
+                'background-size': 'cover',
+                'background-position': 'center center',
+                'z-index':-1,
+                '-webkit-filter': 'blur(5px)',
+                '-moz-filter': 'blur(5px)',
+                '-o-filter': 'blur(5px)',
+                '-ms-filter': 'blur(5px)',
+                'filter': 'blur(5px)',
+                'content': ''
+            }
+        else
+            css = {
+                'background': 'url(' + data.url + ') no-repeat fixed',
+                'background-size': 'cover',
+                'background-position': 'center center'
+            }
+        $('#wallpaper').css(css)
     });
 }
 function changeTitle(title) {

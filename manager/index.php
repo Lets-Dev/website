@@ -53,13 +53,15 @@ include('sidebar.php');
                             Nous vous rappelons les règles du jeu:
                         </p>
                             <ul>
+                                <li>Seuls les cotisants peuvent accéder aux challenges et aux parties avancées du site</li>
                                 <li>Tout au long de l'année, nous vous proposons des challenges. Chaque challenge délivrera 1000 points, répartis par le jury selon la qualité des travaux rendus</li>
                                 <li>Les challenges ont une durée de deux mois: un mois d'apprentissage, un mois de développement</li>
                                 <li>A la fin de l'année, les trois meilleures équipes remportent un prix</li>
                                 <li>Pour participer à un challenge, il faut faire partie d'une équipe ayant entre 3 et 10 membres</li>
                                 <li>L'inscription au challenge n'est possible que depuis le compte du propriétaire de l'équipe</li>
                             </ul>
-                        <p>Bonne rentrée à vous, et bon développement ;)</p>
+                        <p>Nous restons à votre disposition: <a href="mailto:lets-dev@ig2i.fr">lets-dev(at)ig2i.fr</a></p>
+                        <p>Bonne rentrée à vous, et bon développement <i class="fa fa-hand-peace-o"></i></p>
                     </div>
                 </div>
             </div>

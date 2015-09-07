@@ -155,6 +155,11 @@ switch ($_POST['action']) {
         }
         $query->closeCursor();
 
+        if (!canParticipateToChallenge(getUserTeam(getInformation()), $_POST['challenge'])) {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Votre équipe n\'est pas éligible pour s\'inscrire à un challenge.');
+        }
+
         $query = $db->prepare("SELECT * FROM challenge_subscriptions WHERE subscription_challenge = :challenge and subscription_team=:team");
         $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
         $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
@@ -188,6 +193,11 @@ switch ($_POST['action']) {
             if (getInformation() != $data->challenge_jury1 && getInformation() != $data->challenge_jury2 && getInformation() != $data->challenge_ergonomy_jury && !checkPrivileges(getInformation())) {
                 $return['status'] = 'error';
                 array_push($return['messages'], 'Vous n\'avez pas la permission d\'évaluer ce challenge.');
+            }
+
+            if (time() > $data->challenge_end+60*60*24*$config['challenges']['days_to_rate'] || time() < $data->challenge_end) {
+                $return['status'] = 'error';
+                array_push($return['messages'], 'Il n\'est pas l\'heure d\'évaluer ce challenge.');
             }
 
             foreach ($_POST['points'] as $id => $value)

@@ -8,6 +8,24 @@
   background-color: #b66b2b;
   border-color: #8d5321;
 }
+.btn-ld-border {
+  color: #cb7730;
+  background-color: transparent;
+  border: 2px solid #cb7730;
+  font-weight: bold;
+}
+.btn-ld-border:hover {
+  color: #dddddd;
+  background-color: #cb7730;
+  border: 2px solid #cb7730;
+  font-weight: bold;
+}
+.btn-flat {
+  border-radius: 0;
+}
+.black-filter {
+  background-color: rgba(0, 0, 0, 0.5);
+}
 .has-feedback > select {
   -webkit-appearance: none;
 }
@@ -215,4 +233,97 @@
 }
 small {
   color: #999999;
+}
+.navbar-transparent .navbar-nav > li {
+  margin-left: 20px;
+}
+.navbar-transparent .navbar-nav > li > a {
+  box-sizing: border-box;
+  border: solid 2px #cb7730;
+  color: #cb7730;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.navbar-transparent .navbar-nav > li > a:hover {
+  border: solid 2px #cb7730;
+  background: #cb7730;
+  box-sizing: border-box;
+  color: #dddddd;
+}
+.navbar-transparent .navbar-toggle {
+  border: solid 2px #cb7730;
+  color: #cb7730;
+  margin: 0;
+  padding: 15px 15px;
+}
+.row-height {
+  display: table;
+  table-layout: fixed;
+  height: 100%;
+  width: 100%;
+}
+.col-height {
+  display: table-cell;
+  float: none;
+  height: 100%;
+}
+.col-top {
+  vertical-align: top;
+}
+.col-middle {
+  vertical-align: middle;
+}
+.col-bottom {
+  vertical-align: bottom;
+}
+.index-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -10;
+  box-shadow: inset 0 7px 9px -7px #000000;
+  margin-top: 30px;
+  background: #2b2b2b;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: #dddddd;
+}
+.index-footer small {
+  color: #dddddd;
+}
+.index-footer .logo {
+  width: 50%;
+  -webkit-filter: drop-shadow(0px 0px 10px #dddddd);
+  filter: drop-shadow(0px 0px 10px #dddddd);
+}
+.motto {
+  color: #cb7730;
+  text-shadow: 2px 0 0 #2b2b2b, -2px 0 0 #2b2b2b, 0 2px 0 #2b2b2b, 0 -2px 0 #2b2b2b, 1px 1px #2b2b2b, -1px -1px 0 #2b2b2b, 1px -1px 0 #2b2b2b, -1px -1px 0 #2b2b2b;
+}
+.user-card {
+  padding-top: 47px;
+}
+.user-card.no-padding {
+  padding-top: 0;
+}
+.user-card .user-pic {
+  position: absolute;
+  left: 50%;
+  margin-left: -45px;
+  border: 2px solid #dddddd;
+  border-radius: 100%;
+  z-index: 5;
+}
+.user-card .user-description {
+  position: relative;
+  top: 47px;
+  width: 100%;
+}
+.user-card .user-description .box {
+  padding-top: 30px;
+}
+body {
+  background-color: #2b2b2b;
 }

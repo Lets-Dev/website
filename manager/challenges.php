@@ -546,7 +546,7 @@ switch ($_GET['action']) {
                     <?php
                         if (subscribedToChallenge(getUserTeam(getInformation()), $data->challenge_id))
                             echo "<p class='text-center'><b>Votre équipe est inscrite à ce challenge</b></p>";
-                        else if (isTeamOwner(getInformation()) && time() >= $data -> challenge_start && time() < $data->challenge_subjects) { ?>
+                        else if (isTeamOwner(getInformation()) && time() >= $data -> challenge_start && time() < $data->challenge_subjects && canParticipateToChallenge(getUserTeam(getInformation()), $data->challenge_id)) { ?>
                     <div class="text-center">
                        <button class="btn btn-flat btn-ld" onclick="subscribeToChallenge(<?php echo $data->challenge_id ?>)">Inscrire mon équipe à ce challenge</button>
                     </div>
@@ -689,7 +689,7 @@ switch ($_GET['action']) {
                     </div>
                 </div>
                 <?php
-                if (getInformation() == $data->challenge_jury1 || getInformation() == $data->challenge_jury2 || getInformation() == $data->challenge_ergonomy_jury || checkPrivileges(getInformation()))
+                if ((getInformation() == $data->challenge_jury1 || getInformation() == $data->challenge_jury2 || getInformation() == $data->challenge_ergonomy_jury || checkPrivileges(getInformation())) && (time() <= $data->challenge_end+60*60*24*$config['challenges']['days_to_rate'] && time() >= $data->challenge_end))
                         echo '
                     <div class="text-center">
                        <a class="btn btn-flat btn-success" href="./challenges/evaluate/'.$data->challenge_id.'">Évaluer le challenge</a>
@@ -714,7 +714,7 @@ switch ($_GET['action']) {
                 redirect("./challenges/current");
             else {
                 $data = $query -> fetchObject();
-                if (getInformation() != $data->challenge_jury1 && getInformation() != $data->challenge_jury2 && getInformation() != $data->challenge_ergonomy_jury && !checkPrivileges(getInformation())) {
+                if ((getInformation() != $data->challenge_jury1 && getInformation() != $data->challenge_jury2 && getInformation() != $data->challenge_ergonomy_jury && !checkPrivileges(getInformation())) || (time() > $data->challenge_end+60*60*24*$config['challenges']['days_to_rate'] || time() < $data->challenge_end)) {
                     redirect("./challenges/current");
                 }
                 else {

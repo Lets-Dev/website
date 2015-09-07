@@ -303,7 +303,7 @@ if (isset($_GET['team'])) {
                                   WHERE subscription_team=:team AND subscription_status=1');
                         $queryMembers->bindValue(':team', $dataTeam->team_id, PDO::PARAM_INT);
                         $queryMembers->execute();
-                        if ($queryMembers->rowCount() < $config['teams']['min_members'] || $queryMembers->rowCount() > $config['teams']['max_members'])
+                        if (!canParticipateToChallenge($dataTeam->team_id))
                             $class = "danger";
                         else $class = "success";
 
