@@ -149,7 +149,7 @@ switch ($register) {
                 <select class="form-control" name="promotion">
                     <option disabled selected value="0">Promotion</option>
                     <?php
-                    for ($i = 1993; $i < date('Y') + 5; $i++) {
+                    for ($i = 1993; $i <= getCurrentYear() + 6; $i++) {
                         echo '<option value="' . $i . '">' . $i . '</option>';
                     }
                     ?>

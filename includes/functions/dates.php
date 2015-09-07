@@ -17,7 +17,7 @@ function getSchoolYear($year)
  */
 function getCurrentYear()
 {
-    if (date("n") > 1 && date("n") < 9)
+    if (date("n") >= 1 && date("n") < 9)
         return date('Y') - 1;
     else
         return date('Y');
