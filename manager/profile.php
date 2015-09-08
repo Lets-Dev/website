@@ -77,10 +77,11 @@ include('sidebar.php');
                                 $.ajax({
                                     type: "POST",
                                     url: "../includes/queries/account.php",
+                                    dataType: "json",
                                     data: $("#change_contact").serialize(),
-                                    success: function (data) {
+                                    success: function(data) {
+                                        console.log(data);
                                         var i;
-                                        data = JSON.parse(data);
                                         for (i = 0; i < data.messages.length; i++)
                                             toastr[data.status](data.messages[i])
                                         $('.btn').removeAttr('disabled')
@@ -108,8 +109,8 @@ include('sidebar.php');
                             </center>
                         </p>
                         <div class="text-center">
-                            <a href="//gravatar.com" target="_blank" class="btn btn-flat btn-facebook">
-                                <i class="fa fa-gravatar"></i> Gravatar
+                            <a href="//gravatar.com" target="_blank" class="btn btn-flat btn-gravatar">
+                                <i class="fa fa-wordpress"></i> Gravatar
                             </a>
                         </div>
                     </div>

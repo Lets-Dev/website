@@ -1,5 +1,6 @@
 <?php
 include('../autoload.php');
+header('Content-Type: application/json');
 $return = array('status' => 'success', 'messages' => array());
 
 switch ($_POST['action']) {
@@ -25,6 +26,7 @@ switch ($_POST['action']) {
         $query->bindValue(':email', getInformation('email'), PDO::PARAM_STR);
         $query->bindValue(':password', encode($_POST['current']), PDO::PARAM_STR);
         $query->execute();
+
         // On vérifie que le formulaire est rempli
         if (empty($_POST['current']) || empty($_POST['new']) || empty($_POST['confirm'])) {
             $return['status'] = 'error';
@@ -36,10 +38,11 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Les mots de passe entrés ne correspondent pas.');
         }
         // On vérifie que le compte existe
-        if ($query->rowCount() > 0) {
+        if ($query->rowCount() == 0) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Le mot de passe actuel entré est incorrect.');
         }
+
         // Si tout est ok
         if ($return['status'] == 'success') {
             $query->closeCursor();
