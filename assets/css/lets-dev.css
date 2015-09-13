@@ -53,6 +53,9 @@
 .skin-black .main-header .navbar-toggle {
   color: #cb7730;
 }
+.skin-black .main-header .navbar-text {
+  color: #dddddd;
+}
 .skin-black .main-header .navbar-brand {
   color: #cb7730;
   border-right: 1px solid #2b2b2b;

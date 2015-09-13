@@ -63,6 +63,9 @@ include('sidebar.php');
                         <p>Nous restons à votre disposition: <a href="mailto:lets-dev@ig2i.fr">lets-dev(at)ig2i.fr</a></p>
                         <p>Bonne rentrée à vous, et bon développement <i class="fa fa-hand-peace-o"></i></p>
                     </div>
+                    <div class="box-footer">
+                        Nous vous demandons de désactiver AdBlock afin d'avoir un accès intégral sur le contenu.
+                    </div>
                 </div>
             </div>
             <div class="col-md-3">

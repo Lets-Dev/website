@@ -20,7 +20,6 @@ if (isset($_GET['alert'])) {
             </a>
 
             <div class="navbar-custom-menu">
-                <p class="navbar-text" id="adblock"></p>
                 <ul class="nav navbar-nav">
                     <li>
                         <a href="https://letsdevatig2i.slack.com/signup" title="Slack" target="_blank">
@@ -74,7 +73,7 @@ if (isset($_GET['alert'])) {
                                 src="http://gravatar.com/avatar/<?php echo md5(getInformation('email')) ?>?s=25&d=<?php echo urlencode($config['users']['default_avatar']) ?>"
                                 class="user-image" alt="User Image"/>
                         <span
-                            class="hidden-xs"><?php echo getInformation('firstname') . ' ' . getInformation('lastname') ?></span>
+                            class="hidden-xs"><?php echo getInformation('firstname') . ' ' . getInformation('lastname') ?>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-caret-down"></i></span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -108,14 +107,3 @@ if (isset($_GET['alert'])) {
             </div>
         </nav>
     </header>
-    <script>
-        if(typeof fuckAdBlock === 'undefined') {
-            $('#adblock').text("Pour une navigation optimale, nous vous demandons de désactiver AdBlock");
-        } else {
-            fuckAdBlock.onDetected($('#adblock').text("Pour une navigation optimale, nous vous demandons de désactiver AdBlock"));
-            // and|or
-            fuckAdBlock.on(true, $('#adblock').text("Pour une navigation optimale, nous vous demandons de désactiver AdBlock"));
-            // and|or
-            fuckAdBlock.on(true, $('#adblock').text("Pour une navigation optimale, nous vous demandons de désactiver AdBlock"));
-        }
-    </script>
