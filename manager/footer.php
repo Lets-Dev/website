@@ -2,6 +2,7 @@
 <script src="../assets/js/AdminLTE.min.js"></script>
 <script src="../assets/js/slimScroll/jquery.slimscroll.min.js"></script>
 <script src="../assets/js/toastr/toastr.min.js"></script>
+<script src="../assets/js/FuckAdBlock.min.js"></script>
 <script src="../assets/js/lets-dev.js"></script>
 <script>
     (function ($) {
