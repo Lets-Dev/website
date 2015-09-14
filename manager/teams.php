@@ -270,6 +270,7 @@ if (isset($_GET['team'])) {
         <div class="row">
             <?php
             $teams = array();
+            //Todo modifier la récupération des équipes en utilisant la nouvelle fonction getTeamPoints
             for ($i = 0; $i < 2; $i++) {
                 if ($i == 0) {
                     $queryTeam = $db->prepare('SELECT *, SUM(jury_vote_points) AS sum FROM challenge_jury_votes
