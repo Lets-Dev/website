@@ -62,7 +62,7 @@ include('includes/autoload.php');
         </div>
         <div class="row" style="margin-bottom:150px;">
             <div class="col-md-6 col-md-offset-3 text-center">
-                <h1 class="motto">ICI UN SLOGAN QUI PÊTE SA MERE</h1>
+                <h1 class="motto">Another way to dev' !</h1>
             </div>
         </div>
         <div class="row">

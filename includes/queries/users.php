@@ -1,5 +1,6 @@
 <?php
 include('../autoload.php');
+header('Content-Type: application/json');
 $return = array('status' => 'success', 'messages' => array());
 
 switch ($_POST['action']) {
