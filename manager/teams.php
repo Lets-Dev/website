@@ -78,8 +78,6 @@ if (isset($_GET['team'])) {
             <?php
             break;
         default:
-            if (!getUserTeam(getInformation()))
-                redirect("./teams");
             if ($_GET['team'] == "myteam") {
                 $queryTeam = $db->prepare("SELECT * FROM teams WHERE team_id=:id");
                 $queryTeam->bindValue(':id', getUserTeam(getInformation()), PDO::PARAM_INT);

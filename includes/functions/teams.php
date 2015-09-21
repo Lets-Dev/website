@@ -31,26 +31,43 @@ function canParticipateToChallenge($team, $challenge = null)
     return false;
 }
 
-function getTeamPoints($team, $year = null) {
+function getTeamPoints($team, $year)
+{
     global $db;
+    $challengePointsQuery = $db->prepare("SELECT SUM(jury_vote_points) AS sum FROM challenge_jury_votes
+                                    LEFT JOIN challenges ON challenge_id = jury_vote_challenge
+                                    WHERE challenge_start > :start AND challenge_end < :end AND jury_vote_team = :team");
+    $challengePointsQuery->bindValue(':start', getSchoolYear(getCurrentYear())['start'], PDO::PARAM_INT);
+    $challengePointsQuery->bindValue(':end', getSchoolYear(getCurrentYear())['end'], PDO::PARAM_INT);
+    $challengePointsQuery->bindValue(':team', $team, PDO::PARAM_INT);
+    $challengePointsQuery->execute();
+    if ($challengePointsQuery->rowCount())
+        $challengePointsData = $challengePointsQuery->fetchObject()['sum'];
+    else
+        $challengePointsData = 0;
+    $yearPointsQuery = $db->prepare("SELECT * FROM team_points
+                                     WHERE point_team = :team AND point_year = :year");
+    $yearPointsQuery->bindValue(':team', $team, PDO::PARAM_INT);
+    $yearPointsQuery->bindValue(':year', $year, PDO::PARAM_INT);
+    $yearPointsQuery->execute();
+    if ($yearPointsQuery->rowCount())
+        $yearPointsData = $yearPointsQuery->fetchObject()['point_nb'];
+    else
+        $yearPointsData = 0;
+    return $challengePointsData + $yearPointsData;
+}
 
-    if ($year == null) {
-        $query = $db->prepare("select sum(jury_vote_points) as points from challenge_jury_votes
-                            where jury_vote_team=:team");
-        $query->bindValue(':team', $team, PDO::PARAM_INT);
-        $query->execute();
-        $data = $query->fetchObject();
-        return $data->points;
+function getLowestTeamPoint($year)
+{
+    global $db;
+    $min = 0;
+    $teamsQuery = $db->prepare("SELECT team_id FROM teams");
+    $teamsQuery->execute();
+    while ($team = $teamsQuery->fetchObject()) {
+        $points = getTeamPoints($team, $year);
+        if ($points && (!$min || $points < $min)) {
+            $min = $points;
+        }
     }
-    else {
-        $query = $db->prepare("select sum(jury_vote_points) as points from challenge_jury_votes
-                            left join challenges on jury_vote_challenge=challenge_id
-                            where jury_vote_team=:team and challenge_start > :start and challenge_end < :end");
-        $query->bindValue(':team', $team, PDO::PARAM_INT);
-        $query->bindValue(':start', getSchoolYear($year)['start'], PDO::PARAM_INT);
-        $query->bindValue(':end', getSchoolYear($year)['end'], PDO::PARAM_INT);
-        $query->execute();
-        $data = $query->fetchObject();
-        return $data->points;
-    }
+    return $min;
 }
