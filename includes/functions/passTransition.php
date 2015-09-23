@@ -22,8 +22,6 @@ function updatePassword($id)
     {
         $data = $query->fetchObject();
 
-        echo decode($data->user_password) . "<br/>";
-
         $user_salt = generateToken(64);
 
         $newQuery = $db->prepare("UPDATE users SET user_password=:password, user_salt=:salt WHERE user_id=:user_id");
