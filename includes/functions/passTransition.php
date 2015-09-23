@@ -1,5 +1,4 @@
 <?php
-include('../autoload.php');
 function updateAllPasswords()
 {
     global $db;
