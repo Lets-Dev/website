@@ -18,7 +18,7 @@ function updatePassword($id)
     $query->bindValue(":user_id", $id, PDO::PARAM_INT);
     $query->execute();
 
-    if ($query->rowCount)
+    if ($query->rowCount())
     {
         $data = $query->fetchObject();
 
