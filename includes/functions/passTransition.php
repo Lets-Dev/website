@@ -25,9 +25,9 @@ function updatePassword($id)
         $user_salt = generateToken(64);
 
         $newQuery = $db->prepare("UPDATE users SET user_password=:password, user_salt=:salt WHERE user_id=:user_id");
-        $newQuery->bindValues(':password', hash("sha256", $user_salt . decode($data->user_password)), PDO::PARAM_STR);
-        $newQuery->bindValues(':salt', $user_salt, PDO::PARAM_STR);
-        $newQuery->bindValues(':user_id', $id, PDO::PARAM_INT);
+        $newQuery->bindValue(':password', hash("sha256", $user_salt . decode($data->user_password)), PDO::PARAM_STR);
+        $newQuery->bindValue(':salt', $user_salt, PDO::PARAM_STR);
+        $newQuery->bindValue(':user_id', $id, PDO::PARAM_INT);
         $newQuery->execute();
     }
 }
