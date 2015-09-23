@@ -51,7 +51,7 @@ if ($return['status'] == 'success') {
         // Sign Up with Facebook
         // TODO: Facebook Sign-Up
         case 'facebook':
-            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], encode($_POST['password']), $_POST['promotion'], $_POST['facebook_id']);
+            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion'], $_POST['facebook_id']);
             break;
 
         // Sign Up with Github
@@ -71,7 +71,7 @@ if ($return['status'] == 'success') {
 
         // Sign Up with... Let's Dev !
         default:
-            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], encode($_POST['password']), $_POST['promotion']);
+            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion']);
             break;
     }
     array_push($return['messages'], 'Vous avez bien été inscrit.');

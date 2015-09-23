@@ -22,10 +22,10 @@ switch ($_POST['action']) {
 
     // Modification du mot de passe
     case 'edit_password':
-        $query = $db->prepare('SELECT user_id FROM users WHERE user_email=:email AND user_password=:password');
+        $query = $db->prepare('SELECT * FROM users WHERE user_email=:email');
         $query->bindValue(':email', getInformation('email'), PDO::PARAM_STR);
-        $query->bindValue(':password', encode($_POST['current']), PDO::PARAM_STR);
         $query->execute();
+        $data = $query->fetchObject();
 
         // On vérifie que le formulaire est rempli
         if (empty($_POST['current']) || empty($_POST['new']) || empty($_POST['confirm'])) {
@@ -38,7 +38,7 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Les mots de passe entrés ne correspondent pas.');
         }
         // On vérifie que le compte existe
-        if ($query->rowCount() == 0) {
+        if ($data->user_password = hash("sha256", $data->user_salt . $_POST['current'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Le mot de passe actuel entré est incorrect.');
         }
@@ -48,7 +48,7 @@ switch ($_POST['action']) {
             $query->closeCursor();
             $query = $db->prepare('UPDATE users SET user_password= :new WHERE user_email=:email AND user_password=:password');
             $query->bindValue(':email', getInformation('email'), PDO::PARAM_STR);
-            $query->bindValue(':password', encode($_POST['current']), PDO::PARAM_STR);
+            $query->bindValue(':password', hash("sha256", $data->user_salt .$_POST['new']), PDO::PARAM_STR);
             $query->bindValue(':new', encode($_POST['new']), PDO::PARAM_STR);
             $query->execute();
             array_push($return['messages'], 'Le mot de passe a bien été changé.');

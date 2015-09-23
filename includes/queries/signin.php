@@ -56,7 +56,7 @@ switch ($_POST['method']) {
                 if ($query->rowCount() > 0) {
                     $data = $query->fetchObject();
                     // We check the password
-                    if ($data->user_password == encode($_POST['password'])) {
+                    if ($data->user_password == hash("sha256", $data->user_salt . $_POST['password'])) {
                         require_once '../libraries/user_agent.php';
                         array_push($return['messages'], 'Vous êtes bien connecté.');
 
