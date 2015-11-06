@@ -71,3 +71,16 @@ function getLowestTeamPoint($year)
     }
     return $min;
 }
+
+function getTeamLogo($team)
+{
+    global $db, $config;
+
+    $query = $db->prepare("SELECT team_shortname FROM teams WHERE team_id=:id");
+    $query->bindValue(":id", $team, PDO::PARAM_INT);
+    $query->execute();
+    if ($data = $query->fetchObject())
+        if (file_exists('../assets/img/public/teams/' . $data->team_shortname . '.png')||file_exists('../../assets/img/public/teams/' . $data->team_shortname . '.png'))
+            return 'teams/' . $data->team_shortname . '.png';
+    return 'default_team.png';
+}

@@ -107,48 +107,91 @@ switch ($_POST['action']) {
 
     // Modifier une équipe
     case 'edit':
+
         // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
-        $query = $db->prepare('SELECT * FROM teams WHERE team_id = :id AND team_owner = :owner');
-        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
-        $query->bindValue(':owner', getInformation(), PDO::PARAM_INT);
-        $query->execute();
-        if ($query->rowCount() == 0) {
+        if (!isTeamOwner(getInformation(), $_POST['id'])) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Vous n\'avez pas la permission de modifier cette équipe');
         }
-        $query->closeCursor();
 
-        // On vérifie que les champs ont bien été remplis
-        if (empty($_POST['name']) || empty($_POST['shortname']) || empty($_POST['description'])) {
-            $return['status'] = 'error';
-            array_push($return['messages'], 'Veuillez saisir tous les champs.');
-        }
+        if ($return['status'] == 'success')
+            switch ($_POST['step']) {
+                case 'form':
+                    $query = $db->prepare("select * from teams where team_id = :id");
+                    $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+                    $query->execute();
 
-        // On vérifie le shortname
-        if (!checkShortName($_POST['shortname'])) {
-            $return['status'] = 'error';
-            array_push($return['messages'], 'L\'alias de votre nom d\'équipe est invalide. Nous vous proposons: ' . url_slug($_POST['name']));
-        }
+                    $data = $query->fetchObject();
+                    $return['display'] = "<form id='editTeam'>
+                                              <input type='hidden' name='action' value='edit' />
+                                              <input type='hidden' name='step' value='query' />
+                                              <input type='hidden' name='id' value='$data->team_id' />
+                                              <input type='hidden' name='shortname' value='$data->team_shortname' />
+                                              <img src='../assets/img/public/".getTeamLogo($data->team_id)."' class='logo' style='margin-top:-50px;height:100px'/>
+                                              <div class='form-group'>
+                                                  <label>Nom de l'équipe</label>
+                                                  <input type='text' class='form-control' value='$data->team_name' disabled/>
+                                              </div>
+                                              <div class='form-group'>
+                                                  <label>Modifier le logo</label>
+                                                  <input type='file' name='logo'>
+                                              </div>
+                                              <div class='form-group'>
+                                                  <label>Description de l'équipe</label>
+                                                  <textarea name='description' class='form-control'>$data->team_description</textarea>
+                                              </div>
+                                              <button type='submit' class='btn btn-ld btn-flat'>Valider</button>
+                                          </form>
+                                          <script>
+                                                $('#editTeam').submit(function () {
+                                                    $('.btn').attr('disabled', 'disabled');
+                                                    var formData = new FormData($(this)[0]);
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: '../includes/queries/teams.php',
+                                                        data: formData,
+                                                        success: function (data) {
+                                                        console.log(data);
+                                                        if (data.status === 'success') {
+                                                            window.location = './team/myteam';
+                                                        }
+                                                        else {
+                                                            var i;
+                                                            for (i = 0; i < data.messages.length; i++)
+                                                                    toastr['error'](data.messages[i]);
+                                                            }
+                                                        $('.btn').removeAttr('disabled');
+                                                    },
+                                                        cache: false,
+                                                        contentType: false,
+                                                        processData: false
+                                                    });
+                                                    return false;
+                                                });
+                                        </script>";
+                    break;
+                case 'query':
+                    // On vérifie que les champs ont bien été remplis
+                    if (empty($_POST['description'])) {
+                        $return['status'] = 'error';
+                        array_push($return['messages'], 'Veuillez saisir tous les champs.');
+                    }
 
-        // On vérifie que le nom d'équipe n'est pas déjà pris
-        if (!checkEntryAvailability($_POST['name'], 'team_name', 'teams')) {
-            $return['status'] = 'error';
-            array_push($return['messages'], 'Le nom d\'équipe choisi n\'est pas disponible');
-        }
-        if (!checkEntryAvailability($_POST['shortname'], 'team_shortname', 'teams')) {
-            $return['status'] = 'error';
-            array_push($return['messages'], 'L\'alias de nom d\'équipe choisi n\'est pas disponible');
-        }
+                    if ($return['status'] == 'success') {
+                        if (is_uploaded_file($_FILES['logo']['tmp_name'])) {
+                            include('../libraries/SimpleImage.php');
+                            $img = new abeautifulsite\SimpleImage($_FILES['logo']['tmp_name']);
+                            $img->best_fit(500, 500)->save('../../assets/img/public/teams/' . $_POST['shortname'] . '.png');
+                        }
 
-        if ($return['status'] == 'success') {
-            $query = $db->prepare('UPDATE teams SET team_name = :name, team_shortname=:shortname, team_description=:description WHERE team_id=:id');
-            $query->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
-            $query->bindValue(':shortname', $_POST['shortname'], PDO::PARAM_STR);
-            $query->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
-            $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
-            $query->execute();
-            array_push($return['messages'], "L'équipe a bien été mise à jour.");
-        }
+                        $query = $db->prepare('UPDATE teams SET team_description=:description WHERE team_id=:id');
+                        $query->bindValue(':description', $_POST['description'], PDO::PARAM_STR);
+                        $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
+                        $query->execute();
+                        array_push($return['messages'], "L'équipe a bien été mise à jour.");
+                    }
+                    break;
+            }
         break;
 
     // Désactiver une équipe
@@ -230,14 +273,13 @@ switch ($_POST['action']) {
         else
             $status = 0;
 
-        $query = $db->prepare("select * from team_subscriptions WHERE subscription_id=:id");
+        $query = $db->prepare("SELECT * FROM team_subscriptions WHERE subscription_id=:id");
         $query->bindValue(':id', $_POST['id'], PDO::PARAM_INT);
         $query->execute();
         if ($query->rowCount() == 0) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Cette inscription n\'existe pas.');
-        }
-        else {
+        } else {
             $data = $query->fetchObject();
 
             // On vérifie que l'utilisateur est bien le propriétaire de l'équipe
@@ -276,8 +318,7 @@ switch ($_POST['action']) {
                     $notification->create("Nous avons décliné automatiquement toutes les autres potentielles demandes d'adhésion que vous avez envoyées aux autres équipes.");
 
                     array_push($return['messages'], 'La demande d\'adhésion a bien été acceptée.');
-                }
-                else {
+                } else {
                     $query1 = $db->prepare('SELECT * FROM teams WHERE team_id = :team');
                     $query1->bindValue(':team', $data->subscription_team, PDO::PARAM_INT);
                     $query1->execute();

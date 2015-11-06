@@ -150,15 +150,14 @@ if (isset($_GET['team'])) {
                     </div>
                     <div class="col-md-4">
                         <div class="box">
-                            <div class="box-body text-center">
+                            <div class="box-body text-center" id="team_informations">
                                 <?php
-                                if (file_exists('../assets/img/public/teams/' . url_slug($dataTeam->team_shortname) . '.png'))
-                                    echo '<img src="../assets/img/public/teams/' . url_slug($dataTeam->team_shortname) . '.png" class="logo" style="margin-top:-50px;height:100px"/>';
-                                else
-                                    echo '<img src="../assets/img/public/default_team.png" class="logo" style="margin-top:-50px;height:100px"/>';
+                                echo '<img src="../assets/img/public/' . getTeamLogo($dataTeam->team_id) . '" class="logo" style="margin-top:-50px;height:100px"/>';
                                 ?>
 
-                                <h1><?php echo $dataTeam->team_name ?></h1>
+                                <h1>
+                                    <?php echo $dataTeam->team_name ?>
+                                </h1>
 
                                 <div class="row">
                                     <div class="col-md-4">
@@ -184,7 +183,6 @@ if (isset($_GET['team'])) {
                                         </h3>
                                     </div>
                                 </div>
-                                <p></p>
                                 <hr/>
                                 <div class="row row-centered">
                                     <?php
@@ -198,6 +196,12 @@ if (isset($_GET['team'])) {
                                     ?>
                                 </div>
                             </div>
+
+                            <?php if (isTeamOwner(getInformation(), $dataTeam->team_id)) { ?>
+                                <div class="box-footer text-center">
+                                    <button type="button" class="btn btn-link" onclick="editTeam(<?php echo $dataTeam->team_id; ?>);">Modifier l'équipe</button>
+                                </div>
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -209,7 +213,7 @@ if (isset($_GET['team'])) {
                                 <?php
                                 $i = true;
                                 while ($dataSubscriptions = $querySubscriptions->fetchObject()) {
-                                    if ($dataSubscriptions->subscription_status != 2) {
+                                    if ($dataSubscriptions->subscription_status != 2 && (isTeamOwner(getInformation(), $dataSubscriptions->subscription_team) || getUserTeam(getInformation()) == $dataSubscriptions->subscription_team) || $dataSubscriptions->subscription_status == 1) {
                                         if (!$i)
                                             echo '<hr />';
                                         echo '
@@ -279,9 +283,8 @@ if (isset($_GET['team'])) {
                                     ORDER BY SUM(jury_vote_points)');
                     $queryTeam->bindValue(':start', getSchoolYear(getCurrentYear())['start'], PDO::PARAM_INT);
                     $queryTeam->bindValue(':end', getSchoolYear(getCurrentYear())['end'], PDO::PARAM_INT);
-                }
-                else {
-                    $queryTeam=$db->prepare('select * from teams order by team_creation desc');
+                } else {
+                    $queryTeam = $db->prepare('SELECT * FROM teams ORDER BY team_creation DESC');
                 }
 
                 $queryTeam->execute();
