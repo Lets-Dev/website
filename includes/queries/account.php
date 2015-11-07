@@ -73,6 +73,20 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Vous n\'avez pas la permission.');
         }
         break;
+
+    // Marquer un utilisateur comme membre banni
+    case 'ban':
+        if (checkPrivileges(getInformation())) {
+            $query = $db->prepare('UPDATE users SET user_ban=1 WHERE user_id=:id');
+            $query->bindValue(':id', $_POST['user_id'], PDO::PARAM_INT);
+            $query->execute();
+            array_push($return['messages'], 'L\'utilisateur a bien été marqué comme banni.');
+        }
+        else {
+            $return['status'] = 'error';
+            array_push($return['messages'], 'Vous n\'avez pas la permission.');
+        }
+        break;
 }
 
 echo json_encode(array_to_utf8($return));

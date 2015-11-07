@@ -7,6 +7,7 @@ CREATE TABLE `users` (
   `user_salt` VARCHAR(100),
   `user_password` VARCHAR(100) NOT NULL,
   `user_honor` INT(1) NOT NULL,
+  `user_ban` INT(1) NOT NULL,
   `user_promotion_year` INT(4),
   `user_signup` INT(10) NOT NULL,
   `user_last_connection` INT(10) NOT NULL,

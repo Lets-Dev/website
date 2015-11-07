@@ -52,10 +52,14 @@ switch ($_GET['action']) {
                                         echo "Jamais";
                                     echo '</td>
                                         <td class="text-right">';
-                                    if ($data->user_honor == 0)
-                                        echo '<button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>';
-                                    else
+                                    if ($data->user_ban == 0 && $data->user_honor == 0)
+                                        echo '<button class="btn btn-flat btn-xs btn-danger" onclick="banMember(' . $data->user_id . ')">Bannir</button>
+                                        <button class="btn btn-flat btn-xs btn-success" onclick="honorMember(' . $data->user_id . ')">Honorer</button>';
+                                    elseif($data->user_honor == 1)
                                         echo '<i class="fa fa-star text-yellow"></i>';
+                                    else
+                                        echo '<i class="fa fa-times text-red"></i>';
+
                                     echo '</td>
                                     </tr>';
                                 }
@@ -85,6 +89,28 @@ switch ($_GET['action']) {
                 $('.btn').attr('disabled', 'disabled');
                 $.post('../includes/queries/account.php', {
                         action: "honor",
+                        user_id: id
+                    },
+                    function (data) {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        var i;
+                        if (data.status == "success") {
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["success"](data.messages[i])
+                        }
+                        else
+                            for (i = 0; i < data.messages.length; i++)
+                                toastr["error"](data.messages[i])
+                        $('.btn').removeAttr('disabled');
+                        button.remove();
+                    })
+            }
+            function banMember(id) {
+                var button = $(event.target);
+                $('.btn').attr('disabled', 'disabled');
+                $.post('../includes/queries/account.php', {
+                        action: "ban",
                         user_id: id
                     },
                     function (data) {

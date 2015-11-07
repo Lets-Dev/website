@@ -14,25 +14,6 @@ if (!isset($_SESSION['connected']))
 header('Content-Type: application/json; charset=utf-8');
 $return = array('status' => 'success', 'messages' => array());
 switch ($_POST['method']) {
-    // Sign Up with Facebook
-    // TODO: Facebook Sign-Up
-    case 'facebook':
-        break;
-
-    // Sign Up with Github
-    // TODO: Github Sign-Up
-    case 'github':
-        break;
-
-    // Sign Up with Google
-    // TODO: Google Sign-Up
-    case 'google':
-        break;
-
-    // Sign Up with Twitter
-    // TODO: Twitter Sign-Up
-    case 'twitter':
-        break;
 
     // Sign Up with... Let's Dev !
     default:
@@ -49,7 +30,7 @@ switch ($_POST['method']) {
 
             // Check if the account exists
             if ($return['status'] == 'success') {
-                $query = $db->prepare("SELECT * FROM users WHERE user_email = :email");
+                $query = $db->prepare("SELECT * FROM users WHERE user_email = :email AND user_ban = 0");
                 $query->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
                 $query->execute();
                 // If the account exists

@@ -57,9 +57,8 @@ function checkPrivileges($user, $rank = null)
         if ($data = $query->fetchObject())
             if ($data->nb > 0)
                 return true;
-    }
-    else {
-        $query = $db->prepare('SELECT count(*) AS nb FROM desks WHERE '.$rank.' = :user AND desk_year = :year');
+    } else {
+        $query = $db->prepare('SELECT count(*) AS nb FROM desks WHERE ' . $rank . ' = :user AND desk_year = :year');
         $query->bindValue(':user', $user, PDO::PARAM_INT);
         $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
         $query->execute();
@@ -86,6 +85,19 @@ function generateToken($length = 50)
     return $randomString;
 }
 
+function isBanned($user_id)
+{
+    global $db;
+
+    $query = $db->prepare('SELECT user_ban FROM users WHERE user_id = :id');
+    $query->bindValue(':id', $user_id, PDO::PARAM_INT);
+    $query->execute();
+    if ($data = $query->fetchObject())
+        if ($data->user_ban == 0)
+            return false;
+    return true;
+}
+
 /**
  * @brief Vérifie qu'un utilisateur est connecté. S'il ne l'est pas, vérifie la présence de token et de clé et connecte l'utilisateur.
  * @return bool
@@ -108,12 +120,14 @@ function checkSession()
         $query->execute();
         if ($query->rowCount() > 0) {
             $data = $query->fetchObject();
-            $_SESSION['connected'] = true;
-            $_SESSION['informations'] = array("id" => $data->user_id,
-                "email" => $data->user_email,
-                "firstname" => $data->user_firstname,
-                "lastname" => $data->user_lastname);
-            return true;
+            if (!isBanned($data->user_id)) {
+                $_SESSION['connected'] = true;
+                $_SESSION['informations'] = array("id" => $data->user_id,
+                    "email" => $data->user_email,
+                    "firstname" => $data->user_firstname,
+                    "lastname" => $data->user_lastname);
+                return true;
+            }
         }
     }
     return false;
@@ -132,15 +146,13 @@ function getInformation($information = 'id', $user = null)
             return $_SESSION['informations'][$information];
         else
             return false;
-    }
-    else {
-        $query = $db -> prepare('select * from users where user_id = :id');
-        $query -> bindValue(':id', $user, PDO::PARAM_INT);
-        $query -> execute();
-        if ($data = $query -> fetch()) {
-            return $data['user_'.$information];
-        }
-        else
+    } else {
+        $query = $db->prepare('SELECT * FROM users WHERE user_id = :id');
+        $query->bindValue(':id', $user, PDO::PARAM_INT);
+        $query->execute();
+        if ($data = $query->fetch()) {
+            return $data['user_' . $information];
+        } else
             return false;
     }
 }
@@ -178,11 +190,12 @@ function isMember($user, $year)
  * @param $table
  * @return bool
  */
-function checkEntryAvailability($entry, $column, $table) {
+function checkEntryAvailability($entry, $column, $table)
+{
     global $db;
     $query = $db->prepare("select * from $table where $column = \"$entry\"");
-    $query -> execute();
-    if ($query -> rowCount() > 0)
+    $query->execute();
+    if ($query->rowCount() > 0)
         return false;
     return true;
 }
@@ -196,18 +209,20 @@ function redirect($url)
     echo $string;
 }
 
-function ArrayHasDuplicates($array){
+function ArrayHasDuplicates($array)
+{
     $dupe_array = array();
-    foreach($array as $val){
-        if(++$dupe_array[$val] > 1){
+    foreach ($array as $val) {
+        if (++$dupe_array[$val] > 1) {
             return true;
         }
     }
     return false;
 }
 
-function getCurrentFile() {
+function getCurrentFile()
+{
     $file = $_SERVER["SCRIPT_NAME"];
-    $path_details=pathinfo($file);
+    $path_details = pathinfo($file);
     return $path_details['basename'];
 }
