@@ -119,6 +119,7 @@ CREATE TABLE `notifications` (
   `notification_id` INT NOT NULL AUTO_INCREMENT,
   `notification_user` INT NOT NULL,
   `notification_text` VARCHAR(255) NOT NULL,
+  `notification_link` VARCHAR(255) NOT NULL,
   `notification_time` INT(10) NOT NULL,
   `notification_status` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`notification_id`)

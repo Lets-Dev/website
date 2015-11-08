@@ -15,13 +15,14 @@ class Notifications
     }
 
     // Créer une notification
-    public function create($text)
+    public function create($text, $link)
     {
         global $db;
-        $query = $db->prepare("INSERT INTO notifications (notification_user, notification_text, notification_time, notification_status)
-                        VALUES (:user, :text, :time, 0)");
+        $query = $db->prepare("INSERT INTO notifications (notification_user, notification_text, notification_link, notification_time, notification_status)
+                        VALUES (:user, :text, :link, :time, 0)");
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->bindValue(':text', $text, PDO::PARAM_STR);
+        $query->bindValue(':link', $link, PDO::PARAM_STR);
         $query->bindValue(':time', time(), PDO::PARAM_INT);
         $query->execute();
         $query->closeCursor();
@@ -57,7 +58,7 @@ class Notifications
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->execute();
         while ($data = $query->fetchObject())
-            array_push($return['notifications'], array('text' => $data->notification_text, 'time' => $data->notification_time));
+            array_push($return['notifications'], array('id'=>$data->notification_id,'text' => $data->notification_text, 'link' =>$data->notification_link, 'time' => $data->notification_time));
         return $return;
     }
 
@@ -71,7 +72,7 @@ class Notifications
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->execute();
         while ($data = $query->fetchObject())
-            array_push($return['notifications'], array('text' => $data->notification_text, 'time' => $data->notification_time));
+            array_push($return['notifications'], array('id'=>$data->notification_id,'text' => $data->notification_text, 'link' =>$data->notification_link, 'time' => $data->notification_time));
         return $return;
     }
 

@@ -259,7 +259,7 @@ switch ($_POST['action']) {
             $query->execute();
             if ($data = $query->fetchObject()) {
                 $notification = new Notifications($data->team_owner);
-                $notification->create("Un utilisateur a demandé à rejoindre votre équipe.");
+                $notification->create("Un utilisateur a demandé à rejoindre votre équipe.", "manager/team/myteam");
             }
         }
 
@@ -306,7 +306,7 @@ switch ($_POST['action']) {
                     $query1->execute();
                     if ($data1 = $query1->fetchObject()) {
                         $notification = new Notifications($data->subscription_user);
-                        $notification->create("Vous avez été accepté dans l'équipe \"" . $data1->team_name . "\".");
+                        $notification->create("Vous avez été accepté dans l'équipe \"" . $data1->team_name . "\".", "manager/team/myteam");
                     }
 
 
@@ -315,7 +315,7 @@ switch ($_POST['action']) {
                     $query2->bindValue(':user', $data->subscription_user, PDO::PARAM_INT);
                     $query2->execute();
                     $notification = new Notifications($data->subscription_user);
-                    $notification->create("Nous avons décliné automatiquement toutes les autres potentielles demandes d'adhésion que vous avez envoyées aux autres équipes.");
+                    $notification->create("Nous avons décliné automatiquement toutes les autres potentielles demandes d'adhésion que vous avez envoyées aux autres équipes.", "manager/");
 
                     array_push($return['messages'], 'La demande d\'adhésion a bien été acceptée.');
                 } else {
@@ -324,7 +324,7 @@ switch ($_POST['action']) {
                     $query1->execute();
                     if ($data1 = $query1->fetchObject()) {
                         $notification = new Notifications($data->subscription_user);
-                        $notification->create("Votre demande d'adhésion à \"" . $data1->team_name . "\" a été rejetée.");
+                        $notification->create("Votre demande d'adhésion à \"" . $data1->team_name . "\" a été rejetée.", "manager/teams");
                     }
                     array_push($return['messages'], 'La demande d\'adhésion a bien été rejetée');
                 }
@@ -359,7 +359,7 @@ switch ($_POST['action']) {
             $query->execute();
             if ($data = $query->fetchObject()) {
                 $notification = new Notifications($_POST['user']);
-                $notification->create("Vous avez été exclu de l'équipe \"" . $data->team_name . "\".");
+                $notification->create("Vous avez été exclu de l'équipe \"" . $data->team_name . "\".", "manager/teams");
             }
         }
         break;

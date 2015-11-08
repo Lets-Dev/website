@@ -17,10 +17,11 @@ switch ($_POST['action']) {
         $return['display'] = '';
         foreach ($all['notifications'] as $key => $notification) {
             $return['display'] .= '<li>
-                    <a href="#">
-                        ' . $notification['text'] . ' <small style="color: #AAA">' . date_fr("d M Y \à H:i", false, $notification['time']) . '</small>
+                    <a href="../'.$notification['link'].'" data-toggle="tooltip" data-placement="bottom" title="' . $notification['text'] . '">
+                        ' . $notification['text'] . '
+                        <p><small><i class="fa fa-clock-o"></i> Le '.date_fr("d M Y \à H:i", false, $notification['time']).'</small></p>
                     </a>
-                </li>';
+                  </li>';
         }
         break;
 }

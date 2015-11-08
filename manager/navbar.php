@@ -51,10 +51,11 @@ if (isset($_GET['alert'])) {
                                     <?php
                                     foreach ($unread['notifications'] as $key => $notification) {
                                         echo '<li>
-                                        <a href="#">
-                                            '.$notification['text'].' <small style="color: #AAA">'.date_fr("d M Y \à H:i",false,$notification['time']).'</small>
-                                        </a>
-                                    </li>';
+                                                <a href="../'.$notification['link'].'" data-toggle="tooltip" data-placement="bottom" title="' . $notification['text'] . '">
+                                                    ' . $notification['text'] . '
+                                                    <p><small><i class="fa fa-clock-o"></i> Le '.date_fr("d M Y \à H:i", false, $notification['time']).'</small></p>
+                                                </a>
+                                              </li>';
                                     }
                                     ?>
                                 </ul>
