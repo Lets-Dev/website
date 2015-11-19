@@ -156,7 +156,7 @@ switch ($register) {
                 </select>
                 <span class="fa fa-calendar form-control-feedback"></span>
             </div>
-
+            <div class="g-recaptcha" data-sitekey="6Lf5PBETAAAAAM0-5aJZ6bGlXKEjOK7TA0CZkOM8"></div>
             <div class="row">
                 <div class="col-xs-12">
                     <button type="submit" class="btn btn-ld btn-block btn-flat">S'inscrire</button>
@@ -213,6 +213,7 @@ switch ($register) {
                 </select>
                 <span class="fa fa-calendar form-control-feedback"></span>
             </div>
+            <div class="g-recaptcha" data-sitekey="6Lf5PBETAAAAAM0-5aJZ6bGlXKEjOK7TA0CZkOM8"></div>
 
             <div class="row">
                 <div class="col-xs-12">

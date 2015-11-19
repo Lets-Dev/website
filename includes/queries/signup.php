@@ -19,6 +19,27 @@ if (empty($_POST['promotion']))
 if (empty($_POST['phone']))
     $_POST['phone'] = null;
 
+
+// Check if 'hooman' is a bot
+$url = 'https://www.google.com/recaptcha/api/siteverify';
+$data = array('secret' => $recaptcha, 'response' => $_POST['g-recaptcha-response']);
+
+// use key 'http' even if you send the request to https://...
+$options = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'POST',
+        'content' => http_build_query($data),
+    ),
+);
+$context  = stream_context_create($options);
+$result = json_decode(file_get_contents($url, false, $context));
+
+if ($result->{'success'} == false) {
+    $return['status'] = 'error';
+    array_push($return['messages'], 'Il semblerait que vous êtes un robot.');
+}
+
 // Check if all fields are filled
 if (empty($_POST['firstname']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm'])) {
     $return['status'] = 'error';
@@ -44,6 +65,7 @@ if ($return['status'] == 'success') {
             array_push($return['messages'], 'Cet utilisateur existe déjà.');
         }
 }
+
 
 // If everything is ok
 if ($return['status'] == 'success') {

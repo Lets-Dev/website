@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="assets/js/toastr/toastr.min.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/lets-dev.min.css"/>
     <link rel="icon" href="assets/img/public/logo.png" />
+    <script src="https://www.google.com/recaptcha/api.js"></script>
     <title>Let's Dev !</title>
 </head>
 <?php
