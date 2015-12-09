@@ -13,4 +13,5 @@ include('functions/design.php');
 include('classes/notifications.php');
 include('libraries/user_agent.php');
 include('libraries/ParseDown.php');
+include('libraries/email_validator.php');
 ?>

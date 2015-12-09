@@ -126,7 +126,7 @@ if (isset($_GET['team'])) {
             $querySubscriptions->bindValue(':team', $dataTeam->team_id, PDO::PARAM_INT);
             $querySubscriptions->execute();
             ?>
-            <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Mon équipe')">
+            <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - <?php echo $dataTeam->team_name ?>')">
                 <div class="row" style="margin-top: 50px">
                     <div class="col-md-offset-1 col-md-3">
                         <div class="box text-center">

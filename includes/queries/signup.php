@@ -19,10 +19,38 @@ if (empty($_POST['promotion']))
 if (empty($_POST['phone']))
     $_POST['phone'] = null;
 
+
+// Check if 'hooman' is a bot
+$url = 'https://www.google.com/recaptcha/api/siteverify';
+$data = array('secret' => $recaptcha, 'response' => $_POST['g-recaptcha-response']);
+
+// use key 'http' even if you send the request to https://...
+$options = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'POST',
+        'content' => http_build_query($data),
+    ),
+);
+$context  = stream_context_create($options);
+$result = json_decode(file_get_contents($url, false, $context));
+
+if ($result->{'success'} == false) {
+    $return['status'] = 'error';
+    array_push($return['messages'], 'Il semblerait que vous soyez un robot.');
+}
+
 // Check if all fields are filled
 if (empty($_POST['firstname']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm'])) {
     $return['status'] = 'error';
     array_push($return['messages'], 'Veuillez saisir tous les champs.');
+}
+
+// Check if email is validated
+$email = emailvalidator::check($_POST['email']);
+if ($email !== true){
+    $return['status'] = 'error';
+    array_push($return['messages'], $email);
 }
 
 // Check if passwords are the same
@@ -71,11 +99,12 @@ if ($return['status'] == 'success') {
 
         // Sign Up with... Let's Dev !
         default:
-            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion']);
+
+            //addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion']);
             break;
     }
     array_push($return['messages'], 'Vous avez bien été inscrit.');
-    slack("<mailto:".$_POST['email']."|".$_POST['email'].">",true,"Un nouvel utilisateur vient de s'inscrire.", ucfirst(strtolower($_POST['firstname']))." ".ucfirst(strtolower($_POST['lastname'])),"green");
+    //slack("<mailto:".$_POST['email']."|".$_POST['email'].">",true,"Un nouvel utilisateur vient de s'inscrire.", ucfirst(strtolower($_POST['firstname']))." ".ucfirst(strtolower($_POST['lastname'])),"green");
 }
 echo json_encode(array_to_utf8($return));
 ?>

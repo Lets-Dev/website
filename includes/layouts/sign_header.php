@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/lets-dev.min.css"/>
     <link rel="icon" href="assets/img/public/logo.png" />
     <title>Let's Dev !</title>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <?php
 $onload = "getWallpaper();changeTitle('Let\'s Dev ! - Connexion');toastr.options = {'positionClass': 'toast-top-center'};";

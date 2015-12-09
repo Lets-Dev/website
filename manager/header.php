@@ -14,6 +14,7 @@ if (!checkSession())
     <link rel="stylesheet" type="text/css" href="../assets/css/AdminLTE.min.css"/>
     <link rel="stylesheet" type="text/css" href="../assets/css/skins/skin-black.min.css"/>
     <link rel="stylesheet" type="text/css" href="../assets/js/toastr/toastr.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../assets/js/bootstrap-tagsinput/bootstrap-tagsinput.css" />
     <link rel="stylesheet" type="text/css" href="../assets/css/lets-dev.min.css"/>
     <link rel="icon" href="../assets/img/public/logo.png"/>
     <title>Let's Dev !</title>

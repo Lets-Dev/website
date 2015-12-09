@@ -1,6 +1,5 @@
 <?php
 include('../autoload.php');
-include('../functions/dates.php');
 header('Content-Type: application/json');
 
 $return = array('status' => 'success', 'messages' => array());
