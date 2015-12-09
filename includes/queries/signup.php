@@ -100,11 +100,11 @@ if ($return['status'] == 'success') {
         // Sign Up with... Let's Dev !
         default:
 
-            //addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion']);
+            addUser($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['phone'], $_POST['password'], $_POST['promotion']);
             break;
     }
     array_push($return['messages'], 'Vous avez bien été inscrit.');
-    //slack("<mailto:".$_POST['email']."|".$_POST['email'].">",true,"Un nouvel utilisateur vient de s'inscrire.", ucfirst(strtolower($_POST['firstname']))." ".ucfirst(strtolower($_POST['lastname'])),"green");
+    slack("<mailto:".$_POST['email']."|".$_POST['email'].">",true,"Un nouvel utilisateur vient de s'inscrire.", ucfirst(strtolower($_POST['firstname']))." ".ucfirst(strtolower($_POST['lastname'])),"green");
 }
 echo json_encode(array_to_utf8($return));
 ?>
