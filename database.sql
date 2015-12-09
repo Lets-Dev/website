@@ -7,6 +7,7 @@ CREATE TABLE `users` (
   `user_salt` VARCHAR(100),
   `user_password` VARCHAR(100) NOT NULL,
   `user_honor` INT(1) NOT NULL,
+  `user_ban` INT(1) NOT NULL,
   `user_promotion_year` INT(4),
   `user_signup` INT(10) NOT NULL,
   `user_last_connection` INT(10) NOT NULL,
@@ -118,6 +119,7 @@ CREATE TABLE `notifications` (
   `notification_id` INT NOT NULL AUTO_INCREMENT,
   `notification_user` INT NOT NULL,
   `notification_text` VARCHAR(255) NOT NULL,
+  `notification_link` VARCHAR(255) NOT NULL,
   `notification_time` INT(10) NOT NULL,
   `notification_status` INT(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`notification_id`)

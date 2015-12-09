@@ -490,15 +490,16 @@ switch ($_GET['action']) {
                         </div>
                     </div>
                 </div>
-                <div class="box-body">
-                <?php
-                    if ($data->challenge_subjects <= time()) {
-                        $subject = new Parsedown();
-                        echo "<h4 class='text-center'>Sujet</h4>";
-                        echo $subject->text($data->challenge_subject);
+                <div class="box-body text-center">
+            <?php
+                if ($data->challenge_subjects <= time()) {
+                    $subject = new Parsedown();
+                    $subject = $subject->text($data->challenge_subject);
+                    echo "<button class='btn btn-flat btn-ld' type='button' onclick='displayModal(\"Sujet du challenge $data->set_name\", $(\"#challenge$data->challenge_id\").html())'>Afficher le sujet</button>";
+                    echo "<div hidden id='challenge$data->challenge_id'>$subject</div>";
 
-                    }
-                ?>
+                }
+            ?>
                     <h4 class="text-center">Langages</h4>
                     <div class="text-center">
                     <?php
@@ -542,6 +543,25 @@ switch ($_GET['action']) {
                                 <?php echo getInformation('firstname', $data->challenge_jury2).'<br />'.getInformation('lastname', $data->challenge_jury2) ?>
                             </p>
                         </div>
+                    </div>
+                    <h4 class="text-center">Équipes inscrites</h4>
+                    <div class="row row-centered">
+                    <?php
+                        $query3 = $db->prepare("SELECT * FROM challenge_subscriptions
+                                                LEFT JOIN teams ON subscription_team=team_id
+                                                WHERE subscription_challenge=:challenge");
+                        $query3->bindValue(':challenge', $data->challenge_id, PDO::PARAM_INT);
+                        $query3->execute();
+                        while($data3 = $query3->fetchObject()) {
+                    ?>
+                        <div class="col-md-3 col-centered text-center">
+                            <a href="./team/<?php echo $data3->team_shortname; ?>">
+                                <img src="../assets/img/public/<?php echo getTeamLogo($data3->team_id) ?>" class="img-responsive" data-toggle="tooltip" title="<?php echo htmlspecialchars($data3->team_name); ?>" height="50px">
+                            </a>
+                        </div>
+                    <?php
+                        }
+                    ?>
                     </div>
                     <?php
                         if (subscribedToChallenge(getUserTeam(getInformation()), $data->challenge_id))
@@ -635,12 +655,13 @@ switch ($_GET['action']) {
                     </div>
                 </div>
             </div>
-            <div class="box-body">
+                <div class="box-body text-center">
             <?php
                 if ($data->challenge_subjects <= time()) {
                     $subject = new Parsedown();
-                    echo "<h4 class='text-center'>Sujet</h4>";
-                    echo $subject->text($data->challenge_subject);
+                    $subject = $subject->text($data->challenge_subject);
+                    echo "<button class='btn btn-flat btn-ld' type='button' onclick='displayModal(\"Sujet du challenge $data->set_name\", $(\"#challenge$data->challenge_id\").html())'>Afficher le sujet</button>";
+                    echo "<div hidden id='challenge$data->challenge_id'>$subject</div>";
 
                 }
             ?>
@@ -742,7 +763,7 @@ switch ($_GET['action']) {
                     $query1->bindValue(':challenge', $_GET['id'], PDO::PARAM_INT);
                     $query1->execute();
                     while ($data1 = $query1->fetchObject()) {
-                        $query2 = $db->prepare("select * from challenge_jury_votes where jury_vote_challenge=:challenge and jury_vote_team=:team");
+                        $query2 = $db->prepare("SELECT * FROM challenge_jury_votes WHERE jury_vote_challenge=:challenge AND jury_vote_team=:team");
                         $query2->bindValue(':challenge', $_GET['id'], PDO::PARAM_INT);
                         $query2->bindValue(':team', $data1->team_id, PDO::PARAM_INT);
                         $query2->execute();

@@ -8,12 +8,12 @@ function getWallpaper(source, blur) {
             url = 'includes/queries/wallpaper_of_the_day.php';
     }
     $.getJSON(url, function (data) {
-        if (blur ==true)
+        if (blur == true)
             css = {
                 'background': 'url(' + data.url + ') no-repeat fixed',
                 'background-size': 'cover',
                 'background-position': 'center center',
-                'z-index':-1,
+                'z-index': -1,
                 '-webkit-filter': 'blur(5px)',
                 '-moz-filter': 'blur(5px)',
                 '-o-filter': 'blur(5px)',
@@ -89,14 +89,33 @@ function readNotifications() {
 }
 
 function viewAllNotifications() {
-    $.post('../includes/queries/notifications', {
+    $.post('../includes/queries/notifications.php', {
         action: "view_all"
     }, function (data) {
         $('#notifications').html(data.display)
     })
 }
 
+function displayModal(title, body) {
+    $('#modal_title').text(title);
+    $('#modal_body').html(body);
+    $('#modal').modal('show');
+}
+
+function editTeam(id) {
+    $.post('../includes/queries/teams.php', {
+        action: 'edit',
+        step: 'form',
+        id: id
+    }, function (data) {
+        if (data.status == "success") {
+            $('#team_informations').html(data.display);
+            $('.box-footer').remove();
+        }
+    });
+}
+
 toastr.options = {
     "progressBar": true,
     "positionClass": "toast-bottom-right"
-}
+};
