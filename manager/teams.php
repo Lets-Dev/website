@@ -141,7 +141,7 @@ if (isset($_GET['team'])) {
                                 while ($dataChallenges = $queryChallenges->fetchObject()) {
                                     if (!$i)
                                         echo '<hr />';
-                                    echo "<p>" . $dataChallenges->set_name . " <br/><small>Le " . date_fr("j F Y", false, $dataChallenges->subscription_time) . "</small></p>";
+                                    echo "<p>" . $dataChallenges->set_name . " <span class='badge' data-toggle='tooltip' data-placement='bottom' data-html='true' title='Nombre de points obtenus'>" . getTeamChallengePoints($dataTeam->team_id, $dataChallenges->challenge_id) . "</span><br/><small>Le " . date_fr("j F Y", false, $dataChallenges->subscription_time) . "</small></p>";
                                     $i = false;
                                 }
                                 ?>
@@ -161,10 +161,10 @@ if (isset($_GET['team'])) {
 
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <h5>Membres</h5>
+                                        <h5>Points</h5>
 
-                                        <h3 data-toggle="tooltip" title="Nombre de membres de l'équipe">
-                                            <?php echo $dataMemberNumber->nb; ?>
+                                        <h3 data-toggle="tooltip" title="Nombre de points acquis cette année">
+                                            <?php echo getTeamPoints($dataTeam->team_id, getCurrentYear()); ?>
                                         </h3>
                                     </div>
                                     <div class="col-md-4">
@@ -199,7 +199,9 @@ if (isset($_GET['team'])) {
 
                             <?php if (isTeamOwner(getInformation(), $dataTeam->team_id)) { ?>
                                 <div class="box-footer text-center">
-                                    <button type="button" class="btn btn-link" onclick="editTeam(<?php echo $dataTeam->team_id; ?>);">Modifier l'équipe</button>
+                                    <button type="button" class="btn btn-link"
+                                            onclick="editTeam(<?php echo $dataTeam->team_id; ?>);">Modifier l'équipe
+                                    </button>
                                 </div>
                             <?php } ?>
                         </div>
@@ -269,7 +271,7 @@ if (isset($_GET['team'])) {
 } else {
     ?>
     <div class="content-wrapper" onmouseover="changeTitle('Let\'s Dev ! - Parcourir les équipes')">
-        <div class="row">
+        <div class="row" style="margin-top:50px">
             <?php
             $teams = array();
             //Todo modifier la récupération des équipes en utilisant la nouvelle fonction getTeamPoints
@@ -280,7 +282,7 @@ if (isset($_GET['team'])) {
                                     LEFT JOIN challenges ON challenge_id = jury_vote_challenge
                                     WHERE challenge_start > :start AND challenge_end < :end
                                     GROUP BY jury_vote_team
-                                    ORDER BY SUM(jury_vote_points)');
+                                    ORDER BY SUM(jury_vote_points) DESC');
                     $queryTeam->bindValue(':start', getSchoolYear(getCurrentYear())['start'], PDO::PARAM_INT);
                     $queryTeam->bindValue(':end', getSchoolYear(getCurrentYear())['end'], PDO::PARAM_INT);
                 } else {
@@ -293,13 +295,13 @@ if (isset($_GET['team'])) {
                     if (!in_array($dataTeam->team_id, $teams)) {
                         echo '
                 <div class="col-md-4">
-                    <div class="team-card text-center">';
+                    <div class="box text-center">';
+                        echo '<div class="box-body">';
                         if (file_exists('../assets/img/public/teams/' . url_slug($dataTeam->team_shortname) . '.png'))
-                            echo '<img src="../assets/img/public/teams/' . url_slug($dataTeam->team_shortname) . '.png" class="logo"/>&nbsp;&nbsp;';
+                            echo '<img src="../assets/img/public/teams/' . url_slug($dataTeam->team_shortname) . '.png" class="logo" style="margin-top:-50px;height:100px"/>&nbsp;&nbsp;';
                         else
-                            echo '<img src="../assets/img/public/default_team.png" class="logo"/>&nbsp;&nbsp;';
-                        echo '<div class="content">
-                            <h3 class="name"><a href="team/' . $dataTeam->team_shortname . '">' . $dataTeam->team_name . '</a></h3>';
+                            echo '<img src="../assets/img/public/default_team.png" class="logo" style="margin-top:-50px;height:100px"/>&nbsp;&nbsp;';
+                        echo '<h3 class="name"><a href="team/' . $dataTeam->team_shortname . '" style="color: #333">' . $dataTeam->team_name . '</a> <span class="badge" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Nombre de points obtenus en ' . getCurrentYear() . ' - ' . (getCurrentYear() + 1) . '">' . getTeamPoints($dataTeam->team_id, getCurrentYear()) . '</span></h3>';
                         $queryMembers = $db->prepare('SELECT * FROM team_subscriptions
                                   LEFT JOIN users ON subscription_user=users.user_id
                                   WHERE subscription_team=:team AND subscription_status=1');

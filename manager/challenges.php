@@ -40,7 +40,7 @@ switch ($_GET['action']) {
                                     <label for="ergonomy">Jury Ergonomie</label>
                                     <select name="ergonomy" id="ergonomy" class="form-control">
                                         <?php
-                                        $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname');
+                                        $query = $db->prepare('SELECT * FROM users WHERE user_ban=0 ORDER BY user_lastname');
                                         $query->execute();
                                         while ($data = $query->fetchObject()) {
                                             echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
@@ -79,7 +79,7 @@ switch ($_GET['action']) {
                                         <select name="jury[<?php echo $i + 1; ?>][1]" id="jury1"
                                                 class="form-control">
                                             <?php
-                                            $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname');
+                                            $query = $db->prepare('SELECT * FROM users WHERE user_ban=0 ORDER BY user_lastname');
                                             $query->execute();
                                             while ($data = $query->fetchObject()) {
                                                 echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
@@ -92,7 +92,7 @@ switch ($_GET['action']) {
                                         <select name="jury[<?php echo $i + 1; ?>][2]" id="jury2"
                                                 class="form-control">
                                             <?php
-                                            $query = $db->prepare('SELECT * FROM users ORDER BY user_lastname');
+                                            $query = $db->prepare('SELECT * FROM users WHERE user_ban=0 ORDER BY user_lastname');
                                             $query->execute();
                                             while ($data = $query->fetchObject()) {
                                                 echo '<option value="' . $data->user_id . '">' . $data->user_lastname . ' ' . $data->user_firstname . '</option>';
@@ -709,9 +709,32 @@ switch ($_GET['action']) {
                         </p>
                     </div>
                 </div>
+                    <h4 class="text-center">Équipes inscrites</h4>
+                    <div class="row row-centered">
+                    <?php
+                        $query3 = $db->prepare("SELECT * FROM challenge_subscriptions
+                                                LEFT JOIN teams ON subscription_team=team_id
+                                                WHERE subscription_challenge=:challenge");
+                        $query3->bindValue(':challenge', $data->challenge_id, PDO::PARAM_INT);
+                        $query3->execute();
+                        while($data3 = $query3->fetchObject()) {
+                    ?>
+                        <div class="col-md-3 col-centered text-center">
+                            <a href="./team/<?php echo $data3->team_shortname; ?>">
+                                <img src="../assets/img/public/<?php echo getTeamLogo($data3->team_id) ?>" class="img-responsive" data-toggle="tooltip" title="<?php echo htmlspecialchars($data3->team_name); ?>" height="50px">
+                            </a>
+                            <div class="badge" data-toggle="tooltip" data-html="true" title="Nombre de points acquis par <?php echo htmlspecialchars($data3->team_name) ?>">
+                            <?php echo getTeamChallengePoints($data3->team_id, $data->challenge_id); ?>
+                            </div>
+                        </div>
+                    <?php
+                        }
+                    ?>
+                    </div>
                 <?php
                 if ((getInformation() == $data->challenge_jury1 || getInformation() == $data->challenge_jury2 || getInformation() == $data->challenge_ergonomy_jury || checkPrivileges(getInformation())) && (time() <= $data->challenge_end+60*60*24*$config['challenges']['days_to_rate'] && time() >= $data->challenge_end))
                         echo '
+                    <hr />
                     <div class="text-center">
                        <a class="btn btn-flat btn-success" href="./challenges/evaluate/'.$data->challenge_id.'">Évaluer le challenge</a>
                     </div>'

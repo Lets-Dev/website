@@ -1,6 +1,7 @@
 <?php
 include('../autoload.php');
 header('Content-Type: application/json');
+//include('../functions/dates.php');
 
 $return = array('status' => 'success', 'messages' => array());
 
@@ -40,10 +41,6 @@ switch ($_POST['action']) {
                 $query->bindValue(':ergonomy', $_POST['ergonomy'], PDO::PARAM_INT);
                 $query->execute();
                 $query->closeCursor();
-                $query = $db->prepare("SELECT * FROM language_sets WHERE set_id=:id");
-                $query->bindValue(":id", $_POST['language_set'][$i], PDO::PARAM_INT);
-                $query->execute();
-                $data = $query->fetchObject();
 
             }
             // TODO: Ajouter des précisions sur le challenge pour la notification Slack
@@ -93,10 +90,6 @@ switch ($_POST['action']) {
             $query->bindValue(':ergonomy', $_POST['ergonomy'], PDO::PARAM_INT);
             $query->execute();
             $query->closeCursor();
-            $query = $db->prepare("SELECT * FROM language_sets WHERE set_id=:id");
-            $query->bindValue(":id", $_POST['language_set'], PDO::PARAM_INT);
-            $query->execute();
-            $data = $query->fetchObject();
 
 
             // TODO: Ajouter des précisions sur le challenge pour la notification Slack
@@ -160,7 +153,7 @@ switch ($_POST['action']) {
             array_push($return['messages'], 'Votre équipe n\'est pas éligible pour s\'inscrire à un challenge.');
         }
 
-        $query = $db->prepare("SELECT * FROM challenge_subscriptions WHERE subscription_challenge = :challenge and subscription_team=:team");
+        $query = $db->prepare("SELECT * FROM challenge_subscriptions WHERE subscription_challenge = :challenge AND subscription_team=:team");
         $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
         $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
         $query->execute();
@@ -171,11 +164,10 @@ switch ($_POST['action']) {
         $query->closeCursor();
 
         if ($return['status'] == 'success') {
-            if (getTeamPoints(getUserTeam(getInformation()), getCurrentYear()) == 0)
-            {
+            if (getTeamPoints(getUserTeam(getInformation()), getCurrentYear()) == 0) {
                 $query = $db->prepare("INSERT INTO team_points (point_team, point_nb, point_year) VALUES (:team, :nb, :year)");
                 $query->bindValue(':team', getUserTeam(getInformation()), PDO::PARAM_INT);
-                $query->bindValue(':nb', getLowestTeamPoint(getCurrentYear())*0.8, PDO::PARAM_INT);
+                $query->bindValue(':nb', getLowestTeamPoint(getCurrentYear()) * 0.8, PDO::PARAM_INT);
                 $query->bindValue(':year', getCurrentYear(), PDO::PARAM_INT);
 
                 $query->execute();
@@ -207,7 +199,7 @@ switch ($_POST['action']) {
                 array_push($return['messages'], 'Vous n\'avez pas la permission d\'évaluer ce challenge.');
             }
 
-            if (time() > $data->challenge_end+60*60*24*$config['challenges']['days_to_rate'] || time() < $data->challenge_end) {
+            if (time() > $data->challenge_end + 60 * 60 * 24 * $config['challenges']['days_to_rate'] || time() < $data->challenge_end) {
                 $return['status'] = 'error';
                 array_push($return['messages'], 'Il n\'est pas l\'heure d\'évaluer ce challenge.');
             }
@@ -222,11 +214,11 @@ switch ($_POST['action']) {
             }
 
             if ($return['status'] == 'success') {
+                $query = $db->prepare("DELETE FROM challenge_jury_votes WHERE jury_vote_challenge=:challenge");
+                $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
+                $query->execute();
+                $query->closeCursor();
                 for ($i = 0; $i < count($_POST['team']); $i++) {
-                    $query = $db->prepare("DELETE FROM challenge_jury_votes WHERE jury_vote_challenge=:challenge");
-                    $query->bindValue(':challenge', $_POST['challenge'], PDO::PARAM_INT);
-                    $query->execute();
-                    $query->closeCursor();
 
                     $query = $db->prepare("INSERT INTO challenge_jury_votes
                                       (jury_vote_team, jury_vote_points, jury_vote_challenge)

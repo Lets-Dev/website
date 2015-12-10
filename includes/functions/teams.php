@@ -41,8 +41,8 @@ function getTeamPoints($team, $year)
     $challengePointsQuery->bindValue(':end', getSchoolYear(getCurrentYear())['end'], PDO::PARAM_INT);
     $challengePointsQuery->bindValue(':team', $team, PDO::PARAM_INT);
     $challengePointsQuery->execute();
-    if ($challengePointsQuery->rowCount())
-        $challengePointsData = $challengePointsQuery->fetchObject()['sum'];
+    if ($challengePointsQuery->rowCount() > 0)
+        $challengePointsData = $challengePointsQuery->fetch()['sum'];
     else
         $challengePointsData = 0;
     $yearPointsQuery = $db->prepare("SELECT * FROM team_points
@@ -50,8 +50,8 @@ function getTeamPoints($team, $year)
     $yearPointsQuery->bindValue(':team', $team, PDO::PARAM_INT);
     $yearPointsQuery->bindValue(':year', $year, PDO::PARAM_INT);
     $yearPointsQuery->execute();
-    if ($yearPointsQuery->rowCount())
-        $yearPointsData = $yearPointsQuery->fetchObject()['point_nb'];
+    if ($yearPointsQuery->rowCount() > 0)
+        $yearPointsData = $yearPointsQuery->fetch()['point_nb'];
     else
         $yearPointsData = 0;
     return $challengePointsData + $yearPointsData;
@@ -72,6 +72,19 @@ function getLowestTeamPoint($year)
     return $min;
 }
 
+function getTeamChallengePoints($team, $challenge)
+{
+    global $db;
+    $query = $db->prepare("SELECT jury_vote_points FROM challenge_jury_votes
+                            WHERE jury_vote_team = :team AND jury_vote_challenge=:challenge");
+    $query->bindValue(":team", $team, PDO::PARAM_INT);
+    $query->bindValue(":challenge", $challenge, PDO::PARAM_INT);
+    $query->execute();
+    if ($query->rowCount() > 0)
+        return $query->fetch()['jury_vote_points'];
+    return 0;
+}
+
 function getTeamLogo($team)
 {
     global $db, $config;
@@ -80,7 +93,7 @@ function getTeamLogo($team)
     $query->bindValue(":id", $team, PDO::PARAM_INT);
     $query->execute();
     if ($data = $query->fetchObject())
-        if (file_exists('../assets/img/public/teams/' . $data->team_shortname . '.png')||file_exists('../../assets/img/public/teams/' . $data->team_shortname . '.png'))
+        if (file_exists('../assets/img/public/teams/' . $data->team_shortname . '.png') || file_exists('../../assets/img/public/teams/' . $data->team_shortname . '.png'))
             return 'teams/' . $data->team_shortname . '.png';
     return 'default_team.png';
 }

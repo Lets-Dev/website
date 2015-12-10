@@ -27,7 +27,8 @@ $config = array(
                 'contrast' => '#CB7730'
             ),
             'logo' => array(
-                'font' => 'Vermin Vibes'
+                'font' => 'Vermin Vibes',
+                'online-link' => 'http://lets-dev.ig2i.fr/assets/img/public/logo.png'
             )
 
         ),
