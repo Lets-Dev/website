@@ -36,13 +36,14 @@ switch ($_POST['method']) {
                 // If the account exists
                 if ($query->rowCount() > 0) {
                     $data = $query->fetchObject();
-                    if ($data->user_confirm == 0) {
+                    /*if ($data->user_confirm == 0) {
                         $return['status'] = 'error';
                         array_push($return['messages'], 'Veuillez confirmer votre mail avant.');
                     }
 
                     // We check the password
-                    elseif ($data->user_password == hash("sha256", $data->user_salt . $_POST['password'])) {
+                    else*/
+                    if ($data->user_password == hash("sha256", $data->user_salt . $_POST['password'])) {
                         require_once '../libraries/user_agent.php';
                         array_push($return['messages'], 'Vous êtes bien connecté.');
 
