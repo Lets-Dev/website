@@ -6,7 +6,7 @@ include('sidebar.php');
 
 switch ($_GET['action']) {
     case 'create':
-        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges'))
+        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges') && !checkPrivileges(getInformation(), 'desk_jurys'))
             redirect("./challenges/current");
         else {
             ?>
