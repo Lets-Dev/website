@@ -53,7 +53,7 @@
                     </ul>
                 </li>
             <?php
-            if (checkPrivileges(getInformation(), 'desk_challenges') || checkPrivileges(getInformation(), 'desk_president') || checkPrivileges(getInformation(), 'desk_jury')) {
+            if (checkPrivileges(getInformation(), 'desk_challenges') || checkPrivileges(getInformation(), 'desk_president') || checkPrivileges(getInformation(), 'desk_jurys')) {
                 ?>
                 <li class="treeview <?php activeFile('challenges.php','action','create');activeFile('challenges.php','action','manage') ?>">
                     <a href="#">
