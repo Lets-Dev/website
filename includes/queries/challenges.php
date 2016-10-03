@@ -51,7 +51,7 @@ switch ($_POST['action']) {
     // Modifier un challenge
     case 'edit':
         // On vérifie que les utilisateurs ont la permission
-        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges')) {
+        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges') && !checkPrivileges(getInformation(), 'desk_jury')) {
             $return['status'] = 'error';
             array_push($return['messages'], 'Vous n\'avez pas la permission.');
         }
