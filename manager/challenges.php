@@ -256,7 +256,7 @@ switch ($_GET['action']) {
         break;
     case 'edit' :
         //Insérer le formulaire d'édition de challenges ici
-        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges'))
+        if (!checkPrivileges(getInformation(), 'desk_president') && !checkPrivileges(getInformation(), 'desk_challenges') && !checkPrivileges(getInformation(), 'desk_jurys'))
             redirect("./challenges/current");
         else {
             $query = $db -> prepare('SELECT * FROM challenges WHERE challenge_id=:id');
